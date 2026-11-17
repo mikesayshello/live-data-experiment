@@ -32,6 +32,9 @@ h2{font-family:Georgia,serif;font-size:26px;margin:36px 0 6px}
 .chart{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:14px}
 .chart svg{display:block;width:100%;height:auto}
 .err{color:#b3261e}
+html{scroll-behavior:smooth}
+.jump{margin:6px 0 14px;font-size:1.05em}
+.jump a{font-weight:700;text-decoration:underline}
 .ax{fill:var(--muted);font-size:12px;font-family:system-ui,sans-serif}
 .gl{stroke:var(--line);stroke-width:1}
 .bar{fill:var(--accent)}
@@ -118,6 +121,7 @@ h1{animation:none}
 <main class="wrap">
   <h1>Live Data Experiment</h1>
   <p class="sub">Portland, Oregon <span class="cap inline">(where the weather is our whole personality)</span></p>
+  <p class="jump"><a href="#my-sites">Scroll down to see all of my websites &darr;</a></p>
 
   <section class="card clockrow">
     <div class="clocktext">
@@ -188,7 +192,7 @@ h1{animation:none}
   <div class="chart" id="chart"></div>
   <h3 class="sub3">Hour by hour: rain in each single hour</h3>
   <div class="chart" id="hourchart"></div>
-    <h2>My public GitHub projects</h2>
+    <h2 id="my-sites">My public GitHub projects</h2>
   <div class="cap">Everything I've built, on display. Please be gentle.</div>
   <p class="note" id="repostatus" aria-live="polite">Loading</p>
   <ul id="repos" class="repolist"></ul>
@@ -435,15 +439,37 @@ function drawHourly(vals){
   svg.appendChild(el("text",{x:L+pw/2,y:H-4,"text-anchor":"middle","class":"ax"},"Rain that fell in each single hour (inches), newest on the left"));
   var c=$("hourchart"); c.textContent=""; c.appendChild(svg);
 }
+function tfetch(url,opts,ms){
+  return new Promise(function(resolve,reject){
+    var done=false, t=setTimeout(function(){if(!done){done=true;var e=new Error("timed out");e.name="TimeoutError";reject(e)}},ms||10000);
+    fetch(url,opts||{}).then(function(r){if(!done){done=true;clearTimeout(t);resolve(r)}},function(e){if(!done){done=true;clearTimeout(t);reject(e)}});
+  });
+}
+function omFetch(url){
+  return tfetch(url,{cache:"no-store"},10000).then(function(r){
+    return r.text().then(function(txt){
+      var j=null; try{j=JSON.parse(txt)}catch(x){}
+      if(!r.ok||(j&&j.error)){
+        var why=(j&&j.reason)?j.reason:(txt?txt.slice(0,150):"no details");
+        throw new Error("Open-Meteo answered HTTP "+r.status+(r.statusText?" "+r.statusText:"")+": "+why);
+      }
+      if(!j)throw new Error("Open-Meteo sent a reply that isn't valid data: "+txt.slice(0,100));
+      if(!j.hourly||!j.hourly.time)throw new Error("Open-Meteo reply had no hourly data. Reply began: "+txt.slice(0,150));
+      return j;
+    });
+  },function(e){
+    if(e&&(e.name==="TimeoutError"||e.name==="AbortError"))throw new Error("No answer from Open-Meteo after 10 seconds (timed out)");
+    throw new Error("Couldn't reach Open-Meteo ("+((e&&e.message)||"network error")+"). Check your internet connection or an ad/content blocker");
+  });
+}
+function errText(e){return ((e&&e.message)?e.message:String(e||"unknown error")).replace(/[.\s]+$/,"")}
 function showRain(){
-  var c=new AbortController(); setTimeout(function(){c.abort()},10000);
-  fetch("https://api.open-meteo.com/v1/forecast?latitude=45.52&longitude=-122.68&hourly=precipitation&precipitation_unit=inch&past_hours=146&forecast_hours=1&timezone=America%2FLos_Angeles&timeformat=unixtime",{cache:"no-store",signal:c.signal})
-  .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json()})
+  omFetch("https://api.open-meteo.com/v1/forecast?latitude=45.52&longitude=-122.68&hourly=precipitation&precipitation_unit=inch&past_hours=146&forecast_hours=1&timezone=America%2FLos_Angeles&timeformat=unixtime")
   .then(function(d){
     var t=d.hourly.time, p=d.hourly.precipitation, now=Date.now()/1000, vals=[];
     for(var i=0;i<t.length;i++){ if(t[i]<=now && typeof p[i]==="number") vals.push(p[i]); }
     vals=vals.slice(-144);
-    if(vals.length<144)throw new Error("not enough data");
+    if(vals.length<144)throw new Error("Open-Meteo only sent "+vals.length+" of the 144 hours of rain data needed");
     var cum=[],sum=0;
     for(var k=vals.length-1;k>=0;k--){sum+=vals[k];cum.push(sum)}
     window.rain24=cum[23];
@@ -460,7 +486,7 @@ function showRain(){
     $("rainnote").textContent="Updated "+new Date().toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})+". Refreshes every 10 minutes.";
   }).catch(function(e){
     $("rainnote").className="note err";
-    $("rainnote").textContent="Couldn't load rainfall ("+(e&&e.message?e.message:"error")+").";
+    $("rainnote").textContent="Couldn't load rainfall. "+errText(e)+". (Will retry in 10 minutes.)";
   });
 }
 showRain(); setInterval(showRain,600000);
@@ -495,14 +521,12 @@ function drawBar(vals){
   var c2=$("barchart"); c2.textContent=""; c2.appendChild(svg);
 }
 function showBarometer(){
-  var c=new AbortController(); setTimeout(function(){c.abort()},10000);
-  fetch("https://api.open-meteo.com/v1/forecast?latitude=45.52&longitude=-122.68&hourly=pressure_msl&past_hours=50&forecast_hours=1&timezone=America%2FLos_Angeles&timeformat=unixtime",{cache:"no-store",signal:c.signal})
-  .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json()})
+  omFetch("https://api.open-meteo.com/v1/forecast?latitude=45.52&longitude=-122.68&hourly=pressure_msl&past_hours=50&forecast_hours=1&timezone=America%2FLos_Angeles&timeformat=unixtime")
   .then(function(d){
     var t=d.hourly.time, p=d.hourly.pressure_msl, now=Date.now()/1000, vals=[], i;
     for(i=0;i<t.length;i++){ if(t[i]<=now && typeof p[i]==="number") vals.push(p[i]); }
     vals=vals.slice(-49);
-    if(vals.length<49)throw new Error("not enough data");
+    if(vals.length<49)throw new Error("Open-Meteo only sent "+vals.length+" of the 49 hours of pressure data needed");
     var cur=vals[vals.length-1], d3=cur-vals[vals.length-4];
     var word=d3>=1?"Rising":(d3<=-1?"Falling":"Steady");
     if(Math.abs(d3)>=6)word="Rapidly "+word.toLowerCase();
@@ -520,15 +544,14 @@ function showBarometer(){
     $("barnote").textContent="Sea-level pressure. Falling pressure often means worse weather is coming; rising often means clearing. Updated "+new Date().toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})+".";
   }).catch(function(e){
     $("barnote").className="note err";
-    $("barnote").textContent="Couldn't load the barometer ("+(e&&e.message?e.message:"error")+").";
+    $("barnote").textContent="Couldn't load the barometer. "+errText(e)+". (Will retry in 10 minutes.)";
   });
 }
 showBarometer(); setInterval(showBarometer,600000);
 var silverLast=null;
 var SILVERCAPS=["Shiny. Not a snack.","Worth its weight in... well, silver.","Werewolves hate this one weird metal.","The Lone Ranger's favorite bullet, priced live.","Spoons everywhere are checking this number.","Fancy forks are watching closely.","Pirates would be stoked.","All that glitters is, in fact, silver."];
 function showSilver(){
-  var c=new AbortController(); setTimeout(function(){c.abort()},10000);
-  fetch("https://api.gold-api.com/price/XAG",{cache:"no-store",signal:c.signal})
+  tfetch("https://api.gold-api.com/price/XAG",{cache:"no-store"},10000)
   .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json()})
   .then(function(d){
     if(typeof d.price!=="number")throw new Error("bad data");
@@ -544,8 +567,8 @@ function showSilver(){
 }
 showSilver(); setInterval(showSilver,300000);
 function showRepos(){
-  var USER="mikesayshello", c=new AbortController(); setTimeout(function(){c.abort()},10000);
-  fetch("https://api.github.com/users/"+USER+"/repos?per_page=100&sort=updated",{signal:c.signal})
+  var USER="mikesayshello";
+  tfetch("https://api.github.com/users/"+USER+"/repos?per_page=100&sort=updated",{},10000)
   .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json()})
   .then(function(list){
     var ul=$("repos"); ul.textContent="";
