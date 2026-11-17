@@ -32,6 +32,16 @@ h2{font-family:Georgia,serif;font-size:26px;margin:36px 0 6px}
 .chart{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:14px}
 .chart svg{display:block;width:100%;height:auto}
 .err{color:#b3261e}
+.arccard{margin-top:14px}
+.arccard svg{width:100%;height:auto;display:block;margin-top:8px}
+.arcfill{fill:rgba(255,183,3,.16)}
+.arcday{fill:none;stroke:#e07a00;stroke-width:3;stroke-linecap:round}
+.arcnight{fill:none;stroke:var(--muted);stroke-width:2;stroke-dasharray:3 6;stroke-linecap:round;opacity:.7}
+.archoriz{stroke:var(--muted);stroke-width:2}
+.arcsun{fill:#ffb703;stroke:#e07a00;stroke-width:2.5}
+.arcglow{fill:rgba(255,183,3,.30)}
+.arcsun.night{fill:#aeb8be;stroke:#6f7c84}
+.arcglow.night{fill:rgba(174,184,190,.0)}
 html{scroll-behavior:smooth}
 .jump{margin:6px 0 14px;font-size:1.05em}
 .jump a{font-weight:700;text-decoration:underline}
@@ -161,6 +171,22 @@ h1{animation:none}
       <div class="cap" id="cap_set"></div>
     </section>
   </div>
+  <section class="card arccard">
+    <div class="label">The sun&rsquo;s path today <span aria-hidden="true">🌅</span></div>
+    <svg id="arc" viewBox="0 0 400 175" role="img" aria-label="Arch showing where the sun is between sunrise and sunset">
+      <path d="M40 115 A160 95 0 0 1 360 115 Z" class="arcfill"/>
+      <path d="M40 115 A160 95 0 0 1 360 115" class="arcday"/>
+      <path d="M40 115 A160 38 0 0 0 360 115" class="arcnight"/>
+      <line x1="20" y1="115" x2="380" y2="115" class="archoriz"/>
+      <text x="40" y="146" text-anchor="middle" class="ax">Sunrise</text>
+      <text x="40" y="163" text-anchor="middle" class="ax" id="arcrise">…</text>
+      <text x="360" y="146" text-anchor="middle" class="ax">Sunset</text>
+      <text x="360" y="163" text-anchor="middle" class="ax" id="arcset">…</text>
+      <circle id="arcglow" r="20" cx="40" cy="115" class="arcglow"/>
+      <circle id="arcsun" r="11" cx="40" cy="115" class="arcsun"/>
+    </svg>
+    <div class="note" id="arcnote" aria-live="polite"></div>
+  </section>
   <h2>Moon</h2>
   <div class="cap">The moon&rsquo;s commute is below. No traffic up there.</div>
   <section class="card moonrow" style="margin-top:14px">
@@ -273,6 +299,24 @@ function tick(){
   // Sunset: before it = countdown; after it until midnight = how long ago. After midnight it counts down again.
   var s=today.set, sAgo=now>=today.set;
   show("rise",r,now,rAgo); show("set",s,now,sAgo);
+  var ym=new Date(Date.UTC(p[0],p[1]-1,p[2]-1)), yest=dayTimes(ym.getUTCFullYear(),ym.getUTCMonth()+1,ym.getUTCDate());
+  if(yest)drawArc(now,yest,today,tomorrow);
+}
+function drawArc(now,y,t,n){
+  var f,night=false,x,yy;
+  if(now>=t.rise&&now<=t.set){f=(now-t.rise)/(t.set-t.rise);x=200-160*Math.cos(Math.PI*f);yy=115-95*Math.sin(Math.PI*f)}
+  else{
+    night=true;
+    var a,b; if(now<t.rise){a=y.set;b=t.rise}else{a=t.set;b=n.rise}
+    f=Math.min(1,Math.max(0,(now-a)/(b-a)));
+    x=200+160*Math.cos(Math.PI*f);yy=115+38*Math.sin(Math.PI*f);
+  }
+  $("arcsun").setAttribute("cx",x.toFixed(1));$("arcsun").setAttribute("cy",yy.toFixed(1));
+  $("arcglow").setAttribute("cx",x.toFixed(1));$("arcglow").setAttribute("cy",yy.toFixed(1));
+  $("arcsun").setAttribute("class","arcsun"+(night?" night":""));
+  $("arcglow").setAttribute("class","arcglow"+(night?" night":""));
+  $("arcrise").textContent=fmt(t.rise);$("arcset").textContent=fmt(t.set);
+  $("arcnote").textContent=night?"The sun is below the horizon, on its way around to the next sunrise.":"The sun is up. It is the dot on the arch.";
 }
 function show(id,t,now,ago){
   $(id).textContent=fmt(t);
