@@ -73,18 +73,27 @@ section.card:nth-of-type(odd){background:#fffdf5}
 .until strong{font-family:"Fredoka",sans-serif;font-weight:600}
 .clockrow{display:flex;align-items:center;justify-content:space-between;gap:20px}
 .clocktext{min-width:0}
-#analog{width:190px;height:190px;flex:none}
+#analog{width:285px;height:285px;flex:none}
 .kface{fill:#fff;stroke:var(--ink);stroke-width:5}
 .ktick{stroke:var(--ink);stroke-width:3;stroke-linecap:round}
 .knum{font-family:"Bangers","Impact",cursive;font-size:22px;fill:var(--ink)}
 .khour{stroke:var(--ink);stroke-width:7;stroke-linecap:round}
 .kmin{stroke:var(--ink);stroke-width:4.5;stroke-linecap:round}
-.ksec{stroke:var(--accent);stroke-width:2.5;stroke-linecap:round}
-.khub{fill:var(--accent);stroke:var(--ink);stroke-width:2}
-@media(max-width:600px){.clockrow{flex-direction:column;align-items:flex-start}#analog{align-self:center}}
+.ksec{stroke:#1e6bff;stroke-width:2.5;stroke-linecap:round}
+.khub{fill:#1e6bff;stroke:var(--ink);stroke-width:2}
+@media(max-width:600px){.clockrow{flex-direction:column;align-items:flex-start}#analog{align-self:center;max-width:100%;height:auto}}
 .big,.value,.tile .v{font-family:"Quicksand","Fredoka",sans-serif;font-weight:700;letter-spacing:0}
 #phase{font-family:"Bangers","Impact","Comic Sans MS",cursive;font-weight:400;letter-spacing:.04em}
 .sub3{font-family:"Bangers","Impact",cursive;font-weight:400;letter-spacing:.04em;font-size:24px;margin:22px 0 0}
+#now{color:#32cd32;text-shadow:2px 2px 0 var(--ink),-1px -1px 0 var(--ink),1px -1px 0 var(--ink),-1px 1px 0 var(--ink)}
+.silvercard{background:#e4e8ee;margin-top:18px}
+.repolist{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:14px}
+.repolist li{background:#fff;border:3px solid var(--ink);border-radius:16px;box-shadow:6px 6px 0 var(--ink);padding:14px 18px}
+.repolist li:nth-child(3n+1){background:#e8f6ff}.repolist li:nth-child(3n+2){background:#fff0d9}.repolist li:nth-child(3n){background:#e8ffe8}
+.repolist strong{font-family:"Quicksand","Fredoka",sans-serif;font-size:20px}
+.repolist p{margin:2px 0 6px;color:var(--muted);font-size:16px}
+.repolist a{color:var(--accent);font-weight:600}
+.repolist .links{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:15px}
 /* wandering around */
 @keyframes wander1{0%{transform:translate(0,0) rotate(-.8deg)}25%{transform:translate(9px,-7px) rotate(.8deg)}50%{transform:translate(-4px,-12px) rotate(-.4deg)}75%{transform:translate(-10px,3px) rotate(.9deg)}100%{transform:translate(0,0) rotate(-.8deg)}}
 @keyframes wander2{0%{transform:translate(0,0) rotate(.7deg)}30%{transform:translate(-9px,6px) rotate(-.9deg)}60%{transform:translate(8px,10px) rotate(.5deg)}100%{transform:translate(0,0) rotate(.7deg)}}
@@ -124,6 +133,12 @@ h1{animation:none}
       <line id="sh" x1="100" y1="112" x2="100" y2="24" class="ksec"/>
       <circle cx="100" cy="100" r="6" class="khub"/>
     </svg>
+  </section>
+  <section class="card silvercard" aria-live="polite">
+    <div class="label">Silver, per troy ounce <span aria-hidden="true">🪙</span></div>
+    <div class="value" id="silver">…</div>
+    <div class="note" id="silvernote">Loading</div>
+    <div class="cap" id="cap_silver"></div>
   </section>
 
   <div class="grid">
@@ -173,7 +188,12 @@ h1{animation:none}
   <div class="chart" id="chart"></div>
   <h3 class="sub3">Hour by hour: rain in each single hour</h3>
   <div class="chart" id="hourchart"></div>
-  <p class="foot">Numbers are real. Jokes are not responsible for your decisions. Sun and moon times and the clock are worked out on this page (moon times are accurate to within about 15 minutes). Rainfall and barometer readings come from Open-Meteo (modeled data for Portland, not a rain gauge or a barometer), so they need an internet connection. The bars show total rain over the last 1 hour, 2 hours, 3 hours, and so on up to 144 hours (6 days).</p>
+    <h2>My public GitHub projects</h2>
+  <div class="cap">Everything I've built, on display. Please be gentle.</div>
+  <p class="note" id="repostatus" aria-live="polite">Loading</p>
+  <ul id="repos" class="repolist"></ul>
+
+<p class="foot">Numbers are real. Jokes are not responsible for your decisions. Sun and moon times and the clock are worked out on this page (moon times are accurate to within about 15 minutes). Rainfall and barometer readings come from Open-Meteo (modeled data for Portland, not a rain gauge or a barometer), so they need an internet connection. The bars show total rain over the last 1 hour, 2 hours, 3 hours, and so on up to 144 hours (6 days).</p>
 </main>
 <script>
 var LAT=45.5152, LON=-122.6784, TZ="America/Los_Angeles";
@@ -504,6 +524,48 @@ function showBarometer(){
   });
 }
 showBarometer(); setInterval(showBarometer,600000);
+var silverLast=null;
+var SILVERCAPS=["Shiny. Not a snack.","Worth its weight in... well, silver.","Werewolves hate this one weird metal.","The Lone Ranger's favorite bullet, priced live.","Spoons everywhere are checking this number.","Fancy forks are watching closely.","Pirates would be stoked.","All that glitters is, in fact, silver."];
+function showSilver(){
+  var c=new AbortController(); setTimeout(function(){c.abort()},10000);
+  fetch("https://api.gold-api.com/price/XAG",{cache:"no-store",signal:c.signal})
+  .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json()})
+  .then(function(d){
+    if(typeof d.price!=="number")throw new Error("bad data");
+    $("silver").textContent=d.price.toLocaleString("en-US",{style:"currency",currency:"USD"});
+    $("silvernote").className="note";
+    $("silvernote").textContent=d.updatedAt?("As of "+new Date(d.updatedAt).toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})+". Refreshes every 5 minutes."):"Latest price. Refreshes every 5 minutes.";
+    silverLast=d.price;
+  }).catch(function(e){
+    $("silver").textContent="n/a";
+    $("silvernote").className="note err";
+    $("silvernote").textContent="Couldn't load the silver price ("+(e&&e.message?e.message:"error")+").";
+  });
+}
+showSilver(); setInterval(showSilver,300000);
+function showRepos(){
+  var USER="mikesayshello", c=new AbortController(); setTimeout(function(){c.abort()},10000);
+  fetch("https://api.github.com/users/"+USER+"/repos?per_page=100&sort=updated",{signal:c.signal})
+  .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json()})
+  .then(function(list){
+    var ul=$("repos"); ul.textContent="";
+    $("repostatus").className="note";
+    $("repostatus").textContent=list.length+" public project"+(list.length===1?"":"s")+", most recently updated first.";
+    list.forEach(function(r){
+      var li=document.createElement("li");
+      var name=document.createElement("strong"); name.textContent=r.name; li.appendChild(name);
+      if(r.description){var d=document.createElement("p"); d.textContent=r.description; li.appendChild(d)}
+      var box=document.createElement("div"); box.className="links";
+      if(r.has_pages){var a=document.createElement("a"); a.href="https://"+USER+".github.io/"+r.name+"/"; a.textContent="Open the site"; a.target="_blank"; a.rel="noopener"; box.appendChild(a)}
+      var g=document.createElement("a"); g.href=r.html_url; g.textContent="See the code"; g.target="_blank"; g.rel="noopener"; box.appendChild(g);
+      var u=document.createElement("span"); u.className="note"; u.textContent="Updated "+new Date(r.pushed_at).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}); box.appendChild(u);
+      li.appendChild(box); ul.appendChild(li);
+    });
+  }).catch(function(e){var st=$("repostatus"); st.textContent="Couldn't load the project list ("+(e&&e.message?e.message:"error")+").";st.className="note err"});
+}
+showRepos(); setInterval(showRepos,600000);
+
+
 var PHASECAP={"New Moon":"Invisible. Like my motivation on Mondays.","Waxing Crescent":"A tiny smile in the sky.","First Quarter":"Half a moon. Half the effort.","Waxing Gibbous":"Almost full. Fashionably late as always.","Full Moon":"Howl if you want to. No judgment.","Waning Gibbous":"Past its prime, still looking good.","Last Quarter":"Half a moon, half done, full of attitude.","Waning Crescent":"Running on fumes, like the rest of us."};
 function pick(a,seed){return a[seed%a.length]}
 function captions(){
@@ -517,6 +579,7 @@ function captions(){
   else if(h<21)c=pick(["Dinner o'clock. Go eat something.","The day shift is over. Mostly.","Pants are now optional. Look it up.","Couch is calling. It's a long-distance relationship.","Leftovers have never let you down.","Day's done. The moon is clocking in."],k);
   else c=pick(["Almost bedtime. Almost.","One more look at the moon, then sleep.","Past your bedtime and you know it.","Brush your teeth. The barometer says so.","Tomorrow you will thank tonight you.","Screen time is over. Sort of."],k);
   $("cap_now").textContent=c;
+  $("cap_silver").textContent=pick(SILVERCAPS,k);
   var rl=$("riseleft").textContent, sl=$("setleft").textContent;
   $("cap_rise").textContent=/ago/.test(rl)?"The sun clocked in. Somebody has to.":"The sun is still hitting snooze.";
   $("cap_set").textContent=/ago/.test(sl)?"The sun clocked out. Lucky sun.":"The sun is eyeing the exit.";
