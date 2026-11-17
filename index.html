@@ -185,6 +185,7 @@ h1{animation:none}
       <circle id="arcglow" r="20" cx="40" cy="115" class="arcglow"/>
       <circle id="arcsun" r="11" cx="40" cy="115" class="arcsun"/>
     </svg>
+    <div class="note" id="arcday"></div>
     <div class="note" id="arcnote" aria-live="polite"></div>
   </section>
   <h2>Moon</h2>
@@ -315,6 +316,8 @@ function drawArc(now,y,t,n){
   $("arcglow").setAttribute("cx",x.toFixed(1));$("arcglow").setAttribute("cy",yy.toFixed(1));
   $("arcsun").setAttribute("class","arcsun"+(night?" night":""));
   $("arcglow").setAttribute("class","arcglow"+(night?" night":""));
+  var dl=Math.round((t.set-t.rise)/60000);
+  $("arcday").innerHTML="Daylight today: <strong>"+Math.floor(dl/60)+" hours "+(dl%60)+" minutes</strong>";
   $("arcrise").textContent=fmt(t.rise);$("arcset").textContent=fmt(t.set);
   $("arcnote").textContent=night?"The sun is below the horizon, on its way around to the next sunrise.":"The sun is up. It is the dot on the arch.";
 }
