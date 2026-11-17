@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Live Data Experiment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Caveat:wght@600;700&family=Fredoka:wght@400;500;600&family=Quicksand:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f3ee;--surface:#fff;--ink:#1d2428;--muted:#5d6a70;--accent:#c4552d;--line:#e2ddd3}
+@media(prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#15191b;--surface:#1f2528;--ink:#eef0ef;--muted:#a2adb2;--accent:#ec8a63;--line:#343c40}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
+.wrap{max-width:820px;margin:0 auto;padding:40px 22px 60px}
+h1{font-family:Georgia,serif;font-size:clamp(34px,8vw,54px);margin:0 0 6px}
+.sub{color:var(--muted);margin:0 0 24px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px}
+.label{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.big{font-family:Georgia,serif;font-size:clamp(44px,12vw,72px);font-weight:700;margin:6px 0 0;color:var(--ink);line-height:1.1}
+.value{font-family:Georgia,serif;font-size:clamp(32px,8vw,44px);font-weight:700;margin:8px 0 0;color:var(--accent);line-height:1.1}
+.until{margin:12px 0 0;font-size:18px}
+.until strong{font-size:22px}
+.note{color:var(--muted);font-size:14px;margin-top:2px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+.foot{margin-top:22px;color:var(--muted);font-size:14px}
+h2{font-family:Georgia,serif;font-size:26px;margin:36px 0 6px}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.tile .v{font-family:Georgia,serif;font-size:26px;font-weight:700;color:var(--accent)}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:14px}
+.chart svg{display:block;width:100%;height:auto}
+.err{color:#b3261e}
+.ax{fill:var(--muted);font-size:12px;font-family:system-ui,sans-serif}
+.gl{stroke:var(--line);stroke-width:1}
+.bar{fill:var(--accent)}
+@media(max-width:600px){.tiles{grid-template-columns:repeat(3,1fr)}}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.moonrow{display:flex;gap:22px;align-items:center}
+.moonrow svg{width:120px;height:120px;flex:none}
+.sm{font-size:clamp(22px,5vw,28px)}
+.grid4{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+.mdark{fill:#2b3138}.mlit{fill:#f1ecd6}.mring{fill:none;stroke:var(--line);stroke-width:1.5}
+.pline{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linejoin:round}
+.pdot{fill:var(--accent)}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.grid4{grid-template-columns:1fr}.grid3{grid-template-columns:1fr}}
+
+/* ---- Funny edition ---- */
+:root{--bg:#fff3c4;--surface:#ffffff;--ink:#1d2428;--muted:#4a565c;--accent:#d9381e;--line:#1d2428;color-scheme:light}
+@media(prefers-color-scheme:dark){:root{--bg:#fff3c4;--surface:#ffffff;--ink:#1d2428;--muted:#4a565c;--accent:#d9381e;--line:#1d2428;color-scheme:light}}
+body{font-family:"Fredoka","Comic Sans MS","Chalkboard SE",sans-serif;background:var(--bg);background-image:radial-gradient(#f3d96b 1.6px,transparent 1.6px);background-size:22px 22px}
+h1,h2,.big,.value,.tile .v{font-family:"Bangers","Impact","Comic Sans MS",cursive;letter-spacing:.04em;font-weight:400}
+h1{font-size:clamp(44px,11vw,76px);color:var(--accent);text-shadow:3px 3px 0 var(--ink);display:inline-block}
+h2{font-size:34px;color:var(--ink);text-shadow:2px 2px 0 #ffd23f}
+.big{color:var(--ink);font-size:clamp(50px,13vw,84px)}
+.value{color:var(--accent)}
+.card,.tile,.chart{border:3px solid var(--ink);box-shadow:6px 6px 0 var(--ink);border-radius:16px}
+.label,.note,.until,.foot,.sub{font-family:"Fredoka",sans-serif}
+.label{color:var(--ink);font-weight:600}
+.cap{font-family:"Caveat","Comic Sans MS",cursive;font-weight:700;font-size:23px;line-height:1.15;color:#7a2bbf;margin:8px 0 0;min-height:1.2em}
+.cap.inline{display:inline;font-size:22px;margin:0}
+h2+.cap,#cap_bar,#cap_rain{margin:0 0 4px}
+.err{color:#b3261e}
+section.card:nth-of-type(odd){background:#fffdf5}
+#sun,.grid>.card:nth-child(1){background:#ffe28a}
+.grid>.card:nth-child(2){background:#ffb88a}
+.moonrow{background:#cfd8ff}
+.grid4 .card:nth-child(1){background:#f3f0ff}.grid4 .card:nth-child(2){background:#e3f3ff}.grid4 .card:nth-child(3){background:#e8ffe8}.grid4 .card:nth-child(4){background:#ffe8f3}
+.tile{background:#e8f6ff}.tile:nth-child(even){background:#fff0d9}
+.chart{background:#fff}
+.pline{stroke:#d9381e;stroke-width:3}.bar{fill:#2b7de0}
+.until strong{font-family:"Fredoka",sans-serif;font-weight:600}
+.clockrow{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.clocktext{min-width:0}
+#analog{width:190px;height:190px;flex:none}
+.kface{fill:#fff;stroke:var(--ink);stroke-width:5}
+.ktick{stroke:var(--ink);stroke-width:3;stroke-linecap:round}
+.knum{font-family:"Bangers","Impact",cursive;font-size:22px;fill:var(--ink)}
+.khour{stroke:var(--ink);stroke-width:7;stroke-linecap:round}
+.kmin{stroke:var(--ink);stroke-width:4.5;stroke-linecap:round}
+.ksec{stroke:var(--accent);stroke-width:2.5;stroke-linecap:round}
+.khub{fill:var(--accent);stroke:var(--ink);stroke-width:2}
+@media(max-width:600px){.clockrow{flex-direction:column;align-items:flex-start}#analog{align-self:center}}
+.big,.value,.tile .v{font-family:"Quicksand","Fredoka",sans-serif;font-weight:700;letter-spacing:0}
+#phase{font-family:"Bangers","Impact","Comic Sans MS",cursive;font-weight:400;letter-spacing:.04em}
+.sub3{font-family:"Bangers","Impact",cursive;font-weight:400;letter-spacing:.04em;font-size:24px;margin:22px 0 0}
+/* wandering around */
+@keyframes wander1{0%{transform:translate(0,0) rotate(-.8deg)}25%{transform:translate(9px,-7px) rotate(.8deg)}50%{transform:translate(-4px,-12px) rotate(-.4deg)}75%{transform:translate(-10px,3px) rotate(.9deg)}100%{transform:translate(0,0) rotate(-.8deg)}}
+@keyframes wander2{0%{transform:translate(0,0) rotate(.7deg)}30%{transform:translate(-9px,6px) rotate(-.9deg)}60%{transform:translate(8px,10px) rotate(.5deg)}100%{transform:translate(0,0) rotate(.7deg)}}
+@keyframes wander3{0%{transform:translate(0,0)}33%{transform:translate(6px,8px) rotate(-.6deg)}66%{transform:translate(-8px,-6px) rotate(.6deg)}100%{transform:translate(0,0)}}
+@keyframes bobbig{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.card,.tile{animation:none}
+
+
+
+.chart{animation:none}
+.big{display:inline-block;animation:none}
+h1{animation:none}
+.moonrow svg{animation:none}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+.sun-emoji{display:inline-block;animation:spin 12s linear infinite;margin-left:6px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Live Data Experiment</h1>
+  <p class="sub">Portland, Oregon <span class="cap inline">(where the weather is our whole personality)</span></p>
+
+  <section class="card clockrow">
+    <div class="clocktext">
+      <div class="label">Current time</div>
+      <div class="big" id="now">…</div>
+      <div class="note" id="today"></div>
+      <div class="cap" id="cap_now"></div>
+    </div>
+    <svg id="analog" viewBox="0 0 200 200" role="img" aria-label="Analog clock showing the current Portland time">
+      <circle cx="100" cy="100" r="92" class="kface"/>
+      <line id="hh" x1="100" y1="100" x2="100" y2="58" class="khour"/>
+      <line id="mh" x1="100" y1="100" x2="100" y2="34" class="kmin"/>
+      <line id="sh" x1="100" y1="112" x2="100" y2="24" class="ksec"/>
+      <circle cx="100" cy="100" r="6" class="khub"/>
+    </svg>
+  </section>
+
+  <div class="grid">
+    <section class="card">
+      <div class="label">Sunrise <span class="sun-emoji" aria-hidden="true">☀️</span></div>
+      <div class="value" id="rise">…</div>
+      <div class="note" id="risewhen"></div>
+      <p class="until"><strong id="riseleft">…</strong></p>
+      <div class="cap" id="cap_rise"></div>
+    </section>
+    <section class="card">
+      <div class="label">Sunset <span aria-hidden="true">🌇</span></div>
+      <div class="value" id="set">…</div>
+      <div class="note" id="setwhen"></div>
+      <p class="until"><strong id="setleft">…</strong></p>
+      <div class="cap" id="cap_set"></div>
+    </section>
+  </div>
+  <h2>Moon</h2>
+  <div class="cap">The moon&rsquo;s commute is below. No traffic up there.</div>
+  <section class="card moonrow" style="margin-top:14px">
+    <svg viewBox="0 0 100 100" role="img" aria-label="Current phase of the moon" id="moonsvg"></svg>
+    <div>
+      <div class="label">Current phase</div>
+      <div class="value" id="phase">…</div>
+      <div class="note" id="lit"></div>
+      <div class="cap" id="cap_moon"></div>
+    </div>
+  </section>
+  <div class="grid4">
+    <section class="card"><div class="label">Next full moon</div><div class="value sm" id="full">…</div><p class="until"><strong id="fullleft">…</strong></p></section>
+    <section class="card"><div class="label">Next new moon</div><div class="value sm" id="new">…</div><p class="until"><strong id="newleft">…</strong></p></section>
+    <section class="card"><div class="label">Next moonrise</div><div class="value sm" id="mrise">…</div><p class="until"><strong id="mriseleft">…</strong></p></section>
+    <section class="card"><div class="label">Next moonset</div><div class="value sm" id="mset">…</div><p class="until"><strong id="msetleft">…</strong></p></section>
+  </div>
+
+  <h2>Barometer</h2>
+  <p class="note" id="barnote" aria-live="polite">Loading</p>
+  <div class="cap" id="cap_bar"></div>
+  <div class="grid3" id="bartiles"></div>
+  <div class="chart" id="barchart"></div>
+
+  <h2>Rainfall in Portland</h2>
+  <p class="note" id="rainnote" aria-live="polite">Loading</p>
+  <div class="cap" id="cap_rain"></div>
+  <div class="tiles" id="tiles"></div>
+  <div class="chart" id="chart"></div>
+  <h3 class="sub3">Hour by hour: rain in each single hour</h3>
+  <div class="chart" id="hourchart"></div>
+  <p class="foot">Numbers are real. Jokes are not responsible for your decisions. Sun and moon times and the clock are worked out on this page (moon times are accurate to within about 15 minutes). Rainfall and barometer readings come from Open-Meteo (modeled data for Portland, not a rain gauge or a barometer), so they need an internet connection. The bars show total rain over the last 1 hour, 2 hours, 3 hours, and so on up to 144 hours (6 days).</p>
+</main>
+<script>
+var LAT=45.5152, LON=-122.6784, TZ="America/Los_Angeles";
+function $(id){return document.getElementById(id)}
+function rad(d){return d*Math.PI/180} function deg(r){return r*180/Math.PI}
+function mod(a,n){return ((a%n)+n)%n}
+// Standard almanac sunrise/sunset method. Returns UT hours or null.
+function sunUT(Y,M,D,rise){
+  var N=Math.floor(275*M/9)-Math.floor((M+9)/12)*(1+Math.floor((Y-4*Math.floor(Y/4)+2)/3))+D-30;
+  var lh=LON/15, t=N+((rise?6:18)-lh)/24;
+  var Ma=0.9856*t-3.289;
+  var L=mod(Ma+1.916*Math.sin(rad(Ma))+0.020*Math.sin(rad(2*Ma))+282.634,360);
+  var RA=mod(deg(Math.atan(0.91764*Math.tan(rad(L)))),360);
+  RA+=Math.floor(L/90)*90-Math.floor(RA/90)*90; RA/=15;
+  var sd=0.39782*Math.sin(rad(L)), cd=Math.cos(Math.asin(sd));
+  var ch=(Math.cos(rad(90.833))-sd*Math.sin(rad(LAT)))/(cd*Math.cos(rad(LAT)));
+  if(ch>1||ch<-1)return null;
+  var H=(rise?360-deg(Math.acos(ch)):deg(Math.acos(ch)))/15;
+  return mod(H+RA-0.06571*t-6.622-lh,24);
+}
+// Sunrise and sunset (as ms timestamps) for the Pacific calendar day Y-M-D.
+function dayTimes(Y,M,D){
+  var base=Date.UTC(Y,M-1,D), r=sunUT(Y,M,D,true), s=sunUT(Y,M,D,false);
+  if(r===null||s===null)return null;
+  var rm=base+r*3600000, sm=base+s*3600000;
+  while(sm<rm)sm+=86400000;
+  while(sm-rm>86400000)sm-=86400000;
+  return {rise:rm,set:sm};
+}
+function pacificYMD(ms){
+  return new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(ms)).split("-").map(Number);
+}
+function nextEvent(now,key){
+  var p=pacificYMD(now);
+  for(var i=0;i<3;i++){
+    var d=new Date(Date.UTC(p[0],p[1]-1,p[2]+i));
+    var t=dayTimes(d.getUTCFullYear(),d.getUTCMonth()+1,d.getUTCDate());
+    if(t&&t[key]>now)return t[key];
+  }
+  return null;
+}
+function left(ms){
+  var m=Math.max(0,Math.floor(ms/60000));
+  var h=Math.floor(m/60), mm=m%60;
+  var ms=mm+(mm===1?" minute":" minutes");
+  return h===0?ms:h+(h===1?" hour ":" hours ")+ms;
+}
+function fmt(ms){return new Date(ms).toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})}
+function dayWord(ms,now){
+  var a=pacificYMD(ms), b=pacificYMD(now);
+  var da=Date.UTC(a[0],a[1]-1,a[2]), db=Date.UTC(b[0],b[1]-1,b[2]);
+  return da===db?"Today":(da-db===86400000?"Tomorrow":"Later");
+}
+function tick(){
+  var now=Date.now();
+  $("now").textContent=new Date(now).toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"});
+  var cp=new Intl.DateTimeFormat("en-US",{timeZone:TZ,hourCycle:"h23",hour:"numeric",minute:"numeric",second:"numeric"}).formatToParts(new Date(now)), ch=0,cm=0,cs=0;
+  cp.forEach(function(x){if(x.type==="hour")ch=+x.value;if(x.type==="minute")cm=+x.value;if(x.type==="second")cs=+x.value});
+  $("hh").setAttribute("transform","rotate("+(((ch%12)+cm/60+cs/3600)*30)+" 100 100)");
+  $("mh").setAttribute("transform","rotate("+((cm+cs/60)*6)+" 100 100)");
+
+  $("today").textContent=new Date(now).toLocaleDateString("en-US",{timeZone:TZ,weekday:"long",month:"long",day:"numeric",year:"numeric"});
+  var p=pacificYMD(now);
+  var today=dayTimes(p[0],p[1],p[2]);
+  var tm=new Date(Date.UTC(p[0],p[1]-1,p[2]+1));
+  var tomorrow=dayTimes(tm.getUTCFullYear(),tm.getUTCMonth()+1,tm.getUTCDate());
+  if(!today||!tomorrow){["rise","set"].forEach(function(k){$(k).textContent="n/a";$(k+"left").textContent="n/a"});return}
+  // Sunrise: before it = countdown; after it (until sunset) = how long ago; after sunset = next sunrise.
+  var r, rAgo;
+  if(now<today.rise){r=today.rise;rAgo=false}
+  else if(now<today.set){r=today.rise;rAgo=true}
+  else{r=tomorrow.rise;rAgo=false}
+  // Sunset: before it = countdown; after it until midnight = how long ago. After midnight it counts down again.
+  var s=today.set, sAgo=now>=today.set;
+  show("rise",r,now,rAgo); show("set",s,now,sAgo);
+}
+function show(id,t,now,ago){
+  $(id).textContent=fmt(t);
+  $(id+"when").textContent=dayWord(t,now);
+  $(id+"left").textContent=ago?left(now-t)+" ago":"In "+left(t-now);
+}
+tick(); setInterval(tick,1000);
+function sweep(){
+  var sec=(Date.now()%60000)/1000;
+  $("sh").setAttribute("transform","rotate("+(sec*6)+" 100 100)");
+  requestAnimationFrame(sweep);
+}
+requestAnimationFrame(sweep);
+
+// ---- Moon calculations (Meeus, truncated series; accurate to roughly 10-30 minutes) ----
+var MLAT=45.5152, MLON=-122.6784;
+function jd(ms){return ms/86400000+2440587.5}
+var LT=[[0,0,1,0,6288774],[2,0,-1,0,1274027],[2,0,0,0,658314],[0,0,2,0,213618],[0,1,0,0,-185116],[0,0,0,2,-114332],[2,0,-2,0,58793],[2,-1,-1,0,57066],[2,0,1,0,53322],[2,-1,0,0,45758],[0,1,-1,0,-40923],[1,0,0,0,-34720],[0,1,1,0,-30383],[2,0,0,-2,15327],[0,0,1,2,-12528],[0,0,1,-2,10980],[4,0,-1,0,10675],[0,0,3,0,10034],[4,0,-2,0,8548],[2,1,-1,0,-7888],[2,1,0,0,-6766],[1,0,-1,0,-5163],[1,1,0,0,4987],[2,-1,1,0,4036],[2,0,2,0,3994],[4,0,0,0,3861],[2,0,-3,0,3665],[0,1,-2,0,-2689],[2,0,-1,2,-2602],[2,-1,-2,0,2390],[1,0,1,0,-2348],[2,-2,0,0,2236],[0,1,2,0,-2120],[0,2,0,0,-2069],[2,-2,-1,0,2048]];
+var BT=[[0,0,0,1,5128122],[0,0,1,1,280602],[0,0,1,-1,277693],[2,0,0,-1,173237],[2,0,-1,1,55413],[2,0,-1,-1,46271],[2,0,0,1,32573],[0,0,2,1,17198],[2,0,1,-1,9266],[0,0,2,-1,8822],[2,-1,0,-1,8216],[2,0,-2,-1,4324],[2,0,1,1,4200],[2,1,0,-1,-3359]];
+function mmod(a,n){return ((a%n)+n)%n}
+function mrad(d){return d*Math.PI/180}
+function moonPos(ms){
+  var T=(jd(ms)-2451545)/36525;
+  var Lp=218.3164477+481267.88123421*T, D=mrad(297.8501921+445267.1114034*T), M=mrad(357.5291092+35999.0502909*T), Mp=mrad(134.9633964+477198.8675055*T), F=mrad(93.2720950+483202.0175233*T);
+  var E=1-0.002516*T-0.0000074*T*T, sl=0, sb=0, i, t, e;
+  for(i=0;i<LT.length;i++){t=LT[i];e=Math.abs(t[1])===1?E:(Math.abs(t[1])===2?E*E:1);sl+=t[4]*e*Math.sin(t[0]*D+t[1]*M+t[2]*Mp+t[3]*F)}
+  for(i=0;i<BT.length;i++){t=BT[i];e=Math.abs(t[1])===1?E:(Math.abs(t[1])===2?E*E:1);sb+=t[4]*e*Math.sin(t[0]*D+t[1]*M+t[2]*Mp+t[3]*F)}
+  return {lon:mmod(Lp+sl/1e6,360), lat:sb/1e6, T:T};
+}
+function sunLon(ms){
+  var T=(jd(ms)-2451545)/36525;
+  var L0=280.46646+36000.76983*T, M=mrad(357.52911+35999.05029*T);
+  return mmod(L0+1.914602*Math.sin(M)+0.019993*Math.sin(2*M),360);
+}
+function elong(ms){return mmod(moonPos(ms).lon-sunLon(ms),360)}   // 0 new, 90 first quarter, 180 full, 270 last quarter
+function illum(ms){
+  var m=moonPos(ms), d=mrad(mmod(m.lon-sunLon(ms),360));
+  return (1-Math.cos(Math.acos(Math.cos(mrad(m.lat))*Math.cos(d))))/2;
+}
+function phaseName(D){
+  var n=["New Moon","Waxing Crescent","First Quarter","Waxing Gibbous","Full Moon","Waning Gibbous","Last Quarter","Waning Crescent"];
+  return n[Math.floor(mmod(D+22.5,360)/45)%8];
+}
+// Next time the elongation reaches target degrees (0 = new, 180 = full).
+function nextPhase(ms,target){
+  var f=function(t){return mmod(elong(t)-target+180,360)-180}; // crosses from negative to positive
+  var step=3600000, a=ms, fa=f(a), b, fb, n;
+  for(n=0;n<800;n++){
+    b=a+step; fb=f(b);
+    if(fa<0&&fb>=0&&fb-fa<90){
+      var lo=a, hi=b, k;
+      for(k=0;k<30;k++){var mid=(lo+hi)/2; if(f(mid)<0)lo=mid; else hi=mid}
+      return (lo+hi)/2;
+    }
+    a=b; fa=fb;
+  }
+  return null;
+}
+function moonAlt(ms){
+  var m=moonPos(ms), T=m.T, eps=mrad(23.4393-0.0130042*T), lam=mrad(m.lon), bet=mrad(m.lat);
+  var ra=Math.atan2(Math.sin(lam)*Math.cos(eps)-Math.tan(bet)*Math.sin(eps),Math.cos(lam));
+  var dec=Math.asin(Math.sin(bet)*Math.cos(eps)+Math.cos(bet)*Math.sin(eps)*Math.sin(lam));
+  var gmst=280.46061837+360.98564736629*(jd(ms)-2451545);
+  var H=mrad(mmod(gmst+MLON,360))-ra, phi=mrad(MLAT);
+  return Math.asin(Math.sin(phi)*Math.sin(dec)+Math.cos(phi)*Math.cos(dec)*Math.cos(H))*180/Math.PI;
+}
+// Next moonrise (rising=true) or moonset after ms, within 36 hours. Returns ms or null.
+function nextMoonEvent(ms,rising){
+  var h0=0.125, step=300000, a=ms, fa=moonAlt(a)-h0, n, b, fb;
+  for(n=0;n<432;n++){
+    b=a+step; fb=moonAlt(b)-h0;
+    if(rising?(fa<0&&fb>=0):(fa>=0&&fb<0)){
+      var lo=a, hi=b, k;
+      for(k=0;k<20;k++){var mid=(lo+hi)/2, fm=moonAlt(mid)-h0; if(rising?fm<0:fm>=0)lo=mid; else hi=mid}
+      return (lo+hi)/2;
+    }
+    a=b; fa=fb;
+  }
+  return null;
+}
+if(typeof module!=="undefined")module.exports={elong,illum,phaseName,nextPhase,moonAlt,nextMoonEvent,sunLon,moonPos};
+
+function leftLong(ms){
+  var m=Math.max(0,Math.floor(ms/60000)), d=Math.floor(m/1440), h=Math.floor((m%1440)/60), mm=m%60, out=[];
+  if(d>0)out.push(d+(d===1?" day":" days"));
+  if(d>0||h>0)out.push(h+(h===1?" hour":" hours"));
+  out.push(mm+(mm===1?" minute":" minutes"));
+  return "In "+out.join(" ");
+}
+function fmtDT(ms){return new Date(ms).toLocaleString("en-US",{timeZone:TZ,weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}
+function drawMoon(D){
+  var r=44,c=Math.cos(mrad(D)),rx=Math.abs(c)*r,waning=D>180;
+  var g='<circle class="mdark" cx="50" cy="50" r="'+r+'"/>'+
+    '<g'+(waning?' transform="translate(100,0) scale(-1,1)"':'')+'><path class="mlit" d="M50 6 A44 44 0 0 1 50 94 A'+rx.toFixed(2)+' 44 0 0 '+(c>0?0:1)+' 50 6 Z"/></g>'+
+    '<circle class="mring" cx="50" cy="50" r="'+r+'"/>';
+  $("moonsvg").innerHTML=g;
+}
+var moonCache={t:0};
+function showMoon(){
+  var now=Date.now(), D=elong(now);
+  drawMoon(D);
+  $("phase").textContent=phaseName(D);
+  $("lit").textContent=Math.round(illum(now)*100)+"% lit";
+  if(now-moonCache.t>60000){
+    moonCache={t:now,full:nextPhase(now,180),nw:nextPhase(now,0),rise:nextMoonEvent(now,true),set:nextMoonEvent(now,false)};
+  }
+  [["full",moonCache.full],["new",moonCache.nw],["mrise",moonCache.rise],["mset",moonCache.set]].forEach(function(k){
+    if(k[1]===null){$(k[0]).textContent="none soon";$(k[0]+"left").textContent="";return}
+    $(k[0]).textContent=fmtDT(k[1]);
+    $(k[0]+"left").textContent=leftLong(k[1]-now);
+  });
+}
+showMoon(); setInterval(showMoon,1000);
+
+var NS="http://www.w3.org/2000/svg";
+function el(n,at,txt){var e=document.createElementNS(NS,n);for(var k in at)e.setAttribute(k,at[k]);if(txt!=null)e.textContent=txt;return e}
+function inch(v){return v.toFixed(2)+" in"}
+function drawRain(cum){
+  var W=720,H=300,L=52,R=14,T=16,B=44,max=Math.max.apply(null,cum.concat([0.1]));
+  var top=Math.ceil(max*10)/10; if(top<0.1)top=0.1;
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"Bar chart of total rainfall in inches over the last 1 to 144 hours in Portland"});
+  var pw=W-L-R, ph=H-T-B;
+  for(var i=0;i<=4;i++){
+    var y=T+ph-ph*i/4;
+    svg.appendChild(el("line",{x1:L,x2:W-R,y1:y,y2:y,"class":"gl"}));
+    svg.appendChild(el("text",{x:L-8,y:y+4,"text-anchor":"end","class":"ax"},(top*i/4).toFixed(2)));
+  }
+  var bw=pw/cum.length;
+  cum.forEach(function(v,i){
+    var h=top>0?ph*v/top:0, x=L+i*bw+bw*0.15;
+    var r=el("rect",{x:x,y:T+ph-h,width:bw*0.7,height:Math.max(h,v>0?1:0),"class":"bar"});
+    r.appendChild(el("title",{},"Last "+(i+1)+(i===0?" hour":" hours")+((i+1)>48?" ("+((i+1)/24).toFixed(1)+" days)":"")+": "+inch(v)));
+    svg.appendChild(r);
+    var N=i+1; if(N===1||(N<=48&&N%12===0)||(N>48&&N%24===0))svg.appendChild(el("text",{x:x+bw*0.35,y:H-24,"text-anchor":N===cum.length?"end":"middle","class":"ax"},N<=48?N+"h":(N/24)+" days"));
+  });
+  svg.appendChild(el("text",{x:L+pw/2,y:H-4,"text-anchor":"middle","class":"ax"},"Rain over the last N hours, then days (inches, adds up as you go back in time)"));
+  var c=$("chart"); c.textContent=""; c.appendChild(svg);
+}
+
+function drawHourly(vals){
+  var W=720,H=300,L=52,R=14,T=16,B=44,n=vals.length,mx=Math.max.apply(null,vals.concat([0.02]));
+  var top=Math.ceil(mx*100)/100; if(top<0.02)top=0.02;
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"Bar chart of rain in each single hour over the last 144 hours in Portland"});
+  var pw=W-L-R, ph=H-T-B, i;
+  for(i=0;i<=4;i++){
+    var y=T+ph-ph*i/4;
+    svg.appendChild(el("line",{x1:L,x2:W-R,y1:y,y2:y,"class":"gl"}));
+    svg.appendChild(el("text",{x:L-8,y:y+4,"text-anchor":"end","class":"ax"},(top*i/4).toFixed(2)));
+  }
+  var bw=pw/n;
+  vals.forEach(function(v,i){
+    var h=ph*v/top, ago=n-1-i, x=L+ago*bw+bw*0.12;
+    var r=el("rect",{x:x,y:T+ph-h,width:bw*0.76,height:Math.max(h,v>0?1:0),"class":"bar"});
+    r.appendChild(el("title",{},(ago===0?"This past hour: ":"Hour ending "+ago+" hours ago"+(ago>48?" ("+(ago/24).toFixed(1)+" days)":"")+": ")+inch(v)));
+    svg.appendChild(r);
+  });
+  for(i=0;i<n;i++){
+    var ago2=n-1-i;
+    if(ago2===0||(ago2<=48&&ago2%12===0)||(ago2>48&&ago2%24===0)){
+      var lx=L+ago2*bw+bw/2;
+      svg.appendChild(el("text",{x:lx,y:H-24,"text-anchor":ago2===0?"start":"middle","class":"ax"},ago2===0?"now":(ago2<=48?ago2+"h ago":(ago2/24)+" days ago")));
+    }
+  }
+  svg.appendChild(el("text",{x:L+pw/2,y:H-4,"text-anchor":"middle","class":"ax"},"Rain that fell in each single hour (inches), newest on the left"));
+  var c=$("hourchart"); c.textContent=""; c.appendChild(svg);
+}
+function showRain(){
+  var c=new AbortController(); setTimeout(function(){c.abort()},10000);
+  fetch("https://api.open-meteo.com/v1/forecast?latitude=45.52&longitude=-122.68&hourly=precipitation&precipitation_unit=inch&past_hours=146&forecast_hours=1&timezone=America%2FLos_Angeles&timeformat=unixtime",{cache:"no-store",signal:c.signal})
+  .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json()})
+  .then(function(d){
+    var t=d.hourly.time, p=d.hourly.precipitation, now=Date.now()/1000, vals=[];
+    for(var i=0;i<t.length;i++){ if(t[i]<=now && typeof p[i]==="number") vals.push(p[i]); }
+    vals=vals.slice(-144);
+    if(vals.length<144)throw new Error("not enough data");
+    var cum=[],sum=0;
+    for(var k=vals.length-1;k>=0;k--){sum+=vals[k];cum.push(sum)}
+    window.rain24=cum[23];
+    var tiles=$("tiles"); tiles.textContent="";
+    [1,3,6,12,24,48,72,144].forEach(function(n){
+      var tile=document.createElement("div"); tile.className="tile";
+      var l=document.createElement("div"); l.className="note"; l.textContent="Last "+(n>48?(n/24)+" days":n+(n===1?" hour":" hours"));
+      var v=document.createElement("div"); v.className="v"; v.textContent=inch(cum[n-1]);
+      tile.appendChild(l); tile.appendChild(v); tiles.appendChild(tile);
+    });
+    drawRain(cum);
+    drawHourly(vals);
+    $("rainnote").className="note";
+    $("rainnote").textContent="Updated "+new Date().toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})+". Refreshes every 10 minutes.";
+  }).catch(function(e){
+    $("rainnote").className="note err";
+    $("rainnote").textContent="Couldn't load rainfall ("+(e&&e.message?e.message:"error")+").";
+  });
+}
+showRain(); setInterval(showRain,600000);
+function inHg(h){return (h*0.02953).toFixed(2)}
+function drawBar(vals){
+  var W=720,H=300,L=56,R=14,T=16,B=44, mn=Math.min.apply(null,vals), mx=Math.max.apply(null,vals);
+  var pad=Math.max((mx-mn)*0.15,1); mn-=pad; mx+=pad;
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"Line chart of barometric pressure in inches of mercury over the last 48 hours in Portland"});
+  var pw=W-L-R, ph=H-T-B, i, pts=[];
+  for(i=0;i<=4;i++){
+    var y=T+ph-ph*i/4, v=mn+(mx-mn)*i/4;
+    svg.appendChild(el("line",{x1:L,x2:W-R,y1:y,y2:y,"class":"gl"}));
+    svg.appendChild(el("text",{x:L-8,y:y+4,"text-anchor":"end","class":"ax"},inHg(v)));
+  }
+  var n=vals.length;
+  for(i=0;i<n;i++){
+    var x=L+pw*i/(n-1), yy=T+ph-ph*(vals[i]-mn)/(mx-mn);
+    pts.push(x.toFixed(1)+","+yy.toFixed(1));
+  }
+  svg.appendChild(el("polyline",{points:pts.join(" "),"class":"pline"}));
+  for(i=0;i<n;i++){
+    var xx=L+pw*i/(n-1), y2=T+ph-ph*(vals[i]-mn)/(mx-mn);
+    var c=el("circle",{cx:xx,cy:y2,r:i===n-1?5:3,"class":"pdot",opacity:i===n-1?1:0.01});
+    c.appendChild(el("title",{},(i===n-1?"Now":(n-1-i)+" hours ago")+": "+inHg(vals[i])+" inHg ("+Math.round(vals[i])+" hPa)"));
+    svg.appendChild(c);
+  }
+  for(i=0;i<n;i+=6){
+    var lx=L+pw*i/(n-1);
+    svg.appendChild(el("text",{x:lx,y:H-24,"text-anchor":i===0?"start":(i===n-1?"end":"middle"),"class":"ax"},i===n-1?"now":(n-1-i)+"h ago"));
+  }
+  svg.appendChild(el("text",{x:L+pw/2,y:H-4,"text-anchor":"middle","class":"ax"},"Barometric pressure, inches of mercury (inHg), last 48 hours"));
+  var c2=$("barchart"); c2.textContent=""; c2.appendChild(svg);
+}
+function showBarometer(){
+  var c=new AbortController(); setTimeout(function(){c.abort()},10000);
+  fetch("https://api.open-meteo.com/v1/forecast?latitude=45.52&longitude=-122.68&hourly=pressure_msl&past_hours=50&forecast_hours=1&timezone=America%2FLos_Angeles&timeformat=unixtime",{cache:"no-store",signal:c.signal})
+  .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json()})
+  .then(function(d){
+    var t=d.hourly.time, p=d.hourly.pressure_msl, now=Date.now()/1000, vals=[], i;
+    for(i=0;i<t.length;i++){ if(t[i]<=now && typeof p[i]==="number") vals.push(p[i]); }
+    vals=vals.slice(-49);
+    if(vals.length<49)throw new Error("not enough data");
+    var cur=vals[vals.length-1], d3=cur-vals[vals.length-4];
+    var word=d3>=1?"Rising":(d3<=-1?"Falling":"Steady");
+    if(Math.abs(d3)>=6)word="Rapidly "+word.toLowerCase();
+    window.barTrend=word;
+    var tl=$("bartiles"); tl.textContent="";
+    [["Pressure now",inHg(cur)+" inHg",Math.round(cur)+" hPa"],["Trend",word,"Compared with 3 hours ago"],["Change in 3 hours",(d3>=0?"+":"\u2212")+inHg(Math.abs(d3))+" inHg","Last 24 hours: "+(vals[48]-vals[24]>=0?"+":"\u2212")+inHg(Math.abs(vals[48]-vals[24]))+" inHg"]].forEach(function(x){
+      var tile=document.createElement("div"); tile.className="tile";
+      var a=document.createElement("div"); a.className="note"; a.textContent=x[0];
+      var b=document.createElement("div"); b.className="v"; b.textContent=x[1];
+      var e=document.createElement("div"); e.className="note"; e.textContent=x[2];
+      tile.appendChild(a); tile.appendChild(b); tile.appendChild(e); tl.appendChild(tile);
+    });
+    drawBar(vals);
+    $("barnote").className="note";
+    $("barnote").textContent="Sea-level pressure. Falling pressure often means worse weather is coming; rising often means clearing. Updated "+new Date().toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})+".";
+  }).catch(function(e){
+    $("barnote").className="note err";
+    $("barnote").textContent="Couldn't load the barometer ("+(e&&e.message?e.message:"error")+").";
+  });
+}
+showBarometer(); setInterval(showBarometer,600000);
+var PHASECAP={"New Moon":"Invisible. Like my motivation on Mondays.","Waxing Crescent":"A tiny smile in the sky.","First Quarter":"Half a moon. Half the effort.","Waxing Gibbous":"Almost full. Fashionably late as always.","Full Moon":"Howl if you want to. No judgment.","Waning Gibbous":"Past its prime, still looking good.","Last Quarter":"Half a moon, half done, full of attitude.","Waning Crescent":"Running on fumes, like the rest of us."};
+function pick(a,seed){return a[seed%a.length]}
+function captions(){
+  var now=new Date(), h=Number(now.toLocaleString("en-US",{timeZone:TZ,hour:"numeric",hour12:false}))%24, k=Math.floor(Date.now()/60000);
+  var c;
+  if(h<5)c=pick(["Go to bed. The data will still be here.","Why are you up? The moon has questions.","Nothing good happens on a dashboard after midnight.","Even the barometer is asleep. Join it.","You and the owls. That's the whole club.","If you're awake, the snacks are on you."],k);
+  else if(h<9)c=pick(["Rise and grind. Or rise and snooze.","Coffee first. Data second.","Early bird gets the weather report.","The day is brand new. Try not to wreck it.","Pajamas count as business casual until 9.","Somewhere a rooster is judging you."],k);
+  else if(h<12)c=pick(["Mid-morning. Pretend to be productive.","Still earlier than lunch. Barely.","Second coffee o'clock.","Look busy. The clock is watching.","You've done nothing yet and it's going great.","Meetings could have been emails. Most of them."],k);
+  else if(h<14)c=pick(["Lunch o'clock. Stare at the data while you chew.","Peak snack hours.","Eat something. Hangry is not a personality.","The sandwich is calling. Answer it.","Noon-ish. The sun is at full volume.","Lunch break: the only meeting you never skip."],k);
+  else if(h<17)c=pick(["Afternoon slump detected.","Only a few more hours of pretending.","Time moves slower after 2 PM. Science says so. Probably.","The clock is dragging its feet.","Nap hours. Nobody will know.","Snack number two has entered the chat."],k);
+  else if(h<21)c=pick(["Dinner o'clock. Go eat something.","The day shift is over. Mostly.","Pants are now optional. Look it up.","Couch is calling. It's a long-distance relationship.","Leftovers have never let you down.","Day's done. The moon is clocking in."],k);
+  else c=pick(["Almost bedtime. Almost.","One more look at the moon, then sleep.","Past your bedtime and you know it.","Brush your teeth. The barometer says so.","Tomorrow you will thank tonight you.","Screen time is over. Sort of."],k);
+  $("cap_now").textContent=c;
+  var rl=$("riseleft").textContent, sl=$("setleft").textContent;
+  $("cap_rise").textContent=/ago/.test(rl)?"The sun clocked in. Somebody has to.":"The sun is still hitting snooze.";
+  $("cap_set").textContent=/ago/.test(sl)?"The sun clocked out. Lucky sun.":"The sun is eyeing the exit.";
+  var ph=$("phase").textContent; $("cap_moon").textContent=PHASECAP[ph]||"";
+  var t=window.barTrend;
+  if(t){
+    var bl;
+    if(/Rapidly rising/.test(t))bl=["Pressure is shooting up. Hold onto your hat.","Whoa, the barometer just did a backflip upward.","Big pressure jump. The sky is rearranging furniture."];
+    else if(/Rapidly falling/.test(t))bl=["Pressure is plummeting. Cue the dramatic umbrella.","The barometer just fell down the stairs.","Big drop in pressure. Something is brewing."];
+    else if(t==="Rising")bl=["Pressure's up. Good vibes only.","The barometer is climbing. Go it.","Rising pressure: the sky is clearing its throat.","Pressure going up. Skies are getting their act together."];
+    else if(t==="Falling")bl=["Pressure's dropping. Like my motivation on Mondays.","The barometer is sinking. Dramatic as always.","Falling pressure. The clouds are plotting something.","Pressure is slipping. Maybe check for an umbrella."];
+    else bl=["Steady. Boring. Beautiful.","The barometer is holding still. Respect.","Pressure hasn't budged. Calm as a houseplant.","Nothing to see here. The air is minding its own business."];
+    $("cap_bar").textContent=pick(bl,k);
+  }
+  var r=window.rain24;
+  if(typeof r==="number"){
+    var rl2;
+    if(r===0)rl2=["Not a drop. Suspiciously dry for Oregon.","Zero rain. The clouds called in sick.","Dry as toast. Portland is confused.","No rain at all. Quick, enjoy it."];
+    else if(r<0.1)rl2=["A light mist. Portlanders call this 'dry'.","Barely a sprinkle. Umbrellas stay home.","Drizzle detected. Locals did not notice.","A few drops. The sky is just clearing its throat."];
+    else if(r<0.5)rl2=["Damp. The usual.","Moderate moisture. Hair is already regretting it.","Rain's here. Gutters are gossiping.","Standard Portland: wet, and fine about it."];
+    else if(r<1)rl2=["Okay, that's actual rain.","Puddles are forming committees.","Wet enough that the ducks are showing off.","Soggy. Even the squirrels are annoyed."];
+    else rl2=["Somebody build an ark.","Is the river moving in?","That's not rain, that's a swimming pool.","Fish are applying for permits."];
+    $("cap_rain").textContent=pick(rl2,k);
+  }
+}
+captions(); setInterval(captions,5000);
+
+
+
+</script>
+</body>
+</html>
