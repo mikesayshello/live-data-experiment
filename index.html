@@ -92,6 +92,11 @@ section.card:nth-of-type(odd){background:#fffdf5}
 .big.wkday{font-size:clamp(32px,8vw,48px);color:#ff7a00}
 #weekclock{width:331px;height:331px;flex:none}
 .kweekhub{fill:#ff7a00;stroke:var(--ink);stroke-width:2}
+.tidelbl{fill:var(--muted)}
+.tidenext{fill:#ff7a00!important}
+.twave{fill:rgba(30,107,255,.20);stroke:none}
+.tline{fill:none;stroke:#0a7ea4;stroke-width:3;stroke-linejoin:round}
+.tnow{stroke:#ff7a00;stroke-width:2;stroke-dasharray:5 4}
 .tidewater{fill:rgba(30,107,255,.30)}
 .tidehandline{stroke:#0a7ea4;stroke-width:4;stroke-linecap:round}
 .tidetip{fill:#0a7ea4;stroke:var(--ink);stroke-width:1.5}
@@ -261,14 +266,15 @@ h1{animation:none}
       <defs><clipPath id="tideclip"><circle cx="100" cy="100" r="89"/></clipPath></defs>
       <circle cx="100" cy="100" r="92" class="kface"/>
       <g clip-path="url(#tideclip)"><rect id="tidewater" x="0" y="100" width="200" height="200" class="tidewater"/></g>
-      <text x="100" y="-4" text-anchor="middle" class="kdaylbl">HIGH</text>
-      <text x="100" y="213" text-anchor="middle" class="kdaylbl">LOW</text>
-      <text x="152" y="104" text-anchor="middle" class="tidelbl">falling</text>
-      <text x="48" y="104" text-anchor="middle" class="tidelbl">rising</text>
+      <text id="tidehi" x="100" y="-4" text-anchor="middle" class="kdaylbl">HIGH</text>
+      <text id="tidelo" x="100" y="213" text-anchor="middle" class="kdaylbl">LOW</text>
+      <text x="152" y="104" text-anchor="middle" class="tidelbl">falling &#9660;</text>
+      <text x="48" y="104" text-anchor="middle" class="tidelbl">&#9650; rising</text>
       <g id="tidehand"><line x1="100" y1="100" x2="100" y2="30" class="tidehandline"/><circle cx="100" cy="26" r="6" class="tidetip"/></g>
       <circle cx="100" cy="100" r="6" class="tidehub"/>
     </svg>
   </section>
+  <div class="chart" id="tidechart"></div>
   <h2>Snow line: Mt. Hood</h2>
   <p class="note" id="snownote" aria-live="polite">Loading</p>
   <div class="cap" id="cap_snow"></div>
@@ -972,6 +978,59 @@ function loadTides(si,di){
     $("tidenote").textContent="Couldn't load tides. "+errText(e)+(e&&e.retryOther?" (tried: "+tideLog.join(", ")+")":"")+". (Will retry in 30 minutes.)";
   });
 }
+function tideDay(ms,now){
+  var a=pacificYMD(ms), b=pacificYMD(now), d=Math.round((Date.UTC(a[0],a[1]-1,a[2])-Date.UTC(b[0],b[1]-1,b[2]))/86400000);
+  if(d===0)return ""; if(d===1)return "Tomorrow "; if(d===-1)return "Yesterday ";
+  return new Date(ms).toLocaleDateString("en-US",{timeZone:TZ,weekday:"short"})+" ";
+}
+function tideLbl(ms,now){return tideDay(ms,now)+fmt(ms)}
+function tideAt(ms){
+  for(var k=0;k<tideData.length-1;k++){
+    var a=tideData[k], b=tideData[k+1];
+    if(a.t<=ms&&ms<=b.t){var f=(ms-a.t)/(b.t-a.t); return a.v+(b.v-a.v)*(1-Math.cos(Math.PI*f))/2}
+  }
+  return null;
+}
+function drawTideChart(now){
+  var t0=now-3*3600000, t1=now+24*3600000, pts=[], mn=Infinity, mx=-Infinity, ms, v;
+  for(ms=t0;ms<=t1;ms+=900000){v=tideAt(ms); if(v===null)continue; pts.push([ms,v]); mn=Math.min(mn,v); mx=Math.max(mx,v)}
+  if(pts.length<10)return;
+  var W=720,H=290,L=56,R=20,T=30,B=52, pad=Math.max(0.6,(mx-mn)*0.12); var lo=mn-pad, hi=mx+pad;
+  var pw=W-L-R, ph=H-T-B;
+  function X(m){return L+pw*(m-t0)/(t1-t0)} function Y(q){return T+ph-ph*(q-lo)/(hi-lo)}
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"Wave-shaped graph of the predicted tide height for the next 24 hours at Cannon Beach"}), i;
+  for(i=0;i<=4;i++){
+    var gv=lo+(hi-lo)*i/4, gy=Y(gv);
+    svg.appendChild(el("line",{x1:L,x2:W-R,y1:gy,y2:gy,"class":"gl"}));
+    svg.appendChild(el("text",{x:L-8,y:gy+4,"text-anchor":"end","class":"ax"},gv.toFixed(1)));
+  }
+  var d="M"+X(pts[0][0]).toFixed(1)+","+Y(pts[0][1]).toFixed(1);
+  pts.forEach(function(q){d+=" L"+X(q[0]).toFixed(1)+","+Y(q[1]).toFixed(1)});
+  svg.appendChild(el("path",{d:d+" L"+X(pts[pts.length-1][0]).toFixed(1)+","+(T+ph)+" L"+X(pts[0][0]).toFixed(1)+","+(T+ph)+" Z","class":"twave"}));
+  svg.appendChild(el("path",{d:d,"class":"tline"}));
+  // hourly-ish time labels every 6 hours aligned to top of the hour
+  var firstHour=Math.ceil(t0/3600000)*3600000;
+  for(ms=firstHour;ms<=t1;ms+=3600000){
+    var hh=Number(new Date(ms).toLocaleString("en-US",{timeZone:TZ,hour:"numeric",hour12:false}))%24;
+    if(hh%6===0)svg.appendChild(el("text",{x:X(ms),y:H-26,"text-anchor":X(ms)>W-R-24?"end":(X(ms)<L+24?"start":"middle"),"class":"ax"},fmt(ms).replace(" ","")));
+  }
+  // highs and lows
+  tideData.forEach(function(q){
+    if(q.t<t0||q.t>t1)return;
+    var x=X(q.t), y=Y(q.v);
+    svg.appendChild(el("circle",{cx:x,cy:y,r:5,"class":"tidetip"}));
+    var anchor=x<L+50?"start":(x>W-R-50?"end":"middle");
+    svg.appendChild(el("text",{x:x,y:q.hi?y-12:y+22,"text-anchor":anchor,"class":"ax"},(q.hi?"High ":"Low ")+q.v.toFixed(1)+" ft"));
+    svg.appendChild(el("text",{x:x,y:q.hi?y-26:y+36,"text-anchor":anchor,"class":"ax"},fmt(q.t)));
+  });
+  // now marker
+  var nx=X(now), nv=tideAt(now);
+  svg.appendChild(el("line",{x1:nx,x2:nx,y1:T-8,y2:T+ph,"class":"tnow"}));
+  if(nv!==null)svg.appendChild(el("circle",{cx:nx,cy:Y(nv),r:7,fill:"#ff7a00",stroke:"#1d2428","stroke-width":2}));
+  svg.appendChild(el("text",{x:nx,y:T-12,"text-anchor":nx>W-R-40?"end":(nx<L+40?"start":"middle"),"class":"ax",fill:"#ff7a00","font-weight":"700"},"NOW"));
+  svg.appendChild(el("text",{x:L+pw/2,y:H-4,"text-anchor":"middle","class":"ax"},"Predicted tide height in feet, from 3 hours ago to 24 hours ahead"));
+  var c=$("tidechart"); c.textContent=""; c.appendChild(svg);
+}
 function drawTide(){
   if(!tideData)return;
   var now=Date.now(), i=-1;
@@ -986,6 +1045,12 @@ function drawTide(){
   var lvl=mx>mn?(h-mn)/(mx-mn):0.5, y=189-lvl*178;
   $("tidewater").setAttribute("y",y.toFixed(1));
   $("tidestate").textContent=falling?"Falling":"Rising";
+  var hiT=falling?a:b, loT=falling?b:a;
+  $("tidehi").textContent="HIGH "+tideLbl(hiT.t,now)+(falling?" (was)":" (next)");
+  $("tidelo").textContent="LOW "+tideLbl(loT.t,now)+(falling?" (next)":" (was)");
+  $("tidehi").setAttribute("class","kdaylbl"+(falling?"":" tidenext"));
+  $("tidelo").setAttribute("class","kdaylbl"+(falling?" tidenext":""));
+  drawTideChart(now);
   window.tideWord=falling?"falling":"rising";
   $("tideheight").textContent=tideDatum===0?"About "+h.toFixed(1)+" feet above the average low-tide line.":"About "+h.toFixed(1)+" feet, measured from "+TIDE_DATUMS[tideDatum][1]+".";
   var nh=null,nl=null;
