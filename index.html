@@ -87,14 +87,35 @@ section.card:nth-of-type(odd){background:#fffdf5}
 .clockrow{display:flex;align-items:center;justify-content:space-between;gap:20px}
 .clocktext{min-width:0}
 #analog{width:285px;height:285px;flex:none}
+.weekcard{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:14px}
+.weektext{min-width:0}
+.big.wkday{font-size:clamp(32px,8vw,48px);color:#ff7a00}
+#weekclock{width:331px;height:331px;flex:none}
+.kweekhub{fill:#ff7a00;stroke:var(--ink);stroke-width:2}
+.tidewater{fill:rgba(30,107,255,.30)}
+.tidehandline{stroke:#0a7ea4;stroke-width:4;stroke-linecap:round}
+.tidetip{fill:#0a7ea4;stroke:var(--ink);stroke-width:1.5}
+.tidehub{fill:#0a7ea4;stroke:var(--ink);stroke-width:2}
+.tidelbl{fill:var(--muted);font:600 9px system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase}
+.tidestate{color:#0a7ea4!important}
+#tideclock{width:331px;height:331px;flex:none}
+.tidetiles{grid-template-columns:repeat(2,1fr)}
+.tidelist{list-style:none;margin:14px 0 0;padding:0;font-size:14px}
+.tidelist li{display:flex;gap:8px;padding:3px 0;border-bottom:1px dashed var(--line)}
+.tidelist b{min-width:3.2em}
+.kdaytick{stroke:var(--ink);stroke-width:2.5}
+.kdaylbl{fill:var(--muted);font:700 11px system-ui,sans-serif}
+.kdaylbl.today{fill:#ff7a00;font-size:13px}
 .kface{fill:#fff;stroke:var(--ink);stroke-width:5}
 .ktick{stroke:var(--ink);stroke-width:3;stroke-linecap:round}
 .knum{font-family:"Bangers","Impact",cursive;font-size:22px;fill:var(--ink)}
 .khour{stroke:var(--ink);stroke-width:7;stroke-linecap:round}
 .kmin{stroke:var(--ink);stroke-width:4.5;stroke-linecap:round}
 .ksec{stroke:#1e6bff;stroke-width:2.5;stroke-linecap:round}
+.kweek{stroke:#ff7a00;stroke-width:3.5;stroke-linecap:round}
+.kweektip{fill:#ff7a00;stroke:var(--ink);stroke-width:1.5}
 .khub{fill:#1e6bff;stroke:var(--ink);stroke-width:2}
-@media(max-width:600px){.clockrow{flex-direction:column;align-items:flex-start}#analog{align-self:center;max-width:100%;height:auto}}
+@media(max-width:600px){.clockrow,.weekcard{flex-direction:column;align-items:flex-start}#analog,#weekclock,#tideclock{align-self:center;max-width:100%;height:auto}}
 .big,.value,.tile .v{font-family:"Quicksand","Fredoka",sans-serif;font-weight:700;letter-spacing:0}
 #phase{font-family:"Bangers","Impact","Comic Sans MS",cursive;font-weight:400;letter-spacing:.04em}
 .sub3{font-family:"Bangers","Impact",cursive;font-weight:400;letter-spacing:.04em;font-size:24px;margin:22px 0 0}
@@ -148,6 +169,32 @@ h1{animation:none}
       <circle cx="100" cy="100" r="6" class="khub"/>
     </svg>
   </section>
+  <section class="card weekcard">
+    <div class="weektext">
+      <div class="label">Week clock <span aria-hidden="true">📆</span></div>
+      <div class="big wkday" id="wkday">…</div>
+      <div class="note">One hand, one lap per week. The day names mark each midnight, and Sunday midnight is straight up.</div>
+    </div>
+    <svg id="weekclock" viewBox="-16 -16 232 232" role="img" aria-label="Week clock with a single orange hand that makes one turn per week">
+      <circle cx="100" cy="100" r="92" class="kface"/>
+      <line x1="100.0" y1="5.0" x2="100.0" y2="0.0" class="kdaytick"/>
+      <text id="dl0" x="100.0" y="-5.0" text-anchor="middle" class="kdaylbl">Sun</text>
+      <line x1="174.3" y1="40.8" x2="178.2" y2="37.7" class="kdaytick"/>
+      <text id="dl1" x="185.2" y="36.0" text-anchor="middle" class="kdaylbl">Mon</text>
+      <line x1="192.6" y1="121.1" x2="197.5" y2="122.3" class="kdaytick"/>
+      <text id="dl2" x="206.3" y="128.3" text-anchor="middle" class="kdaylbl">Tue</text>
+      <line x1="141.2" y1="185.6" x2="143.4" y2="190.1" class="kdaytick"/>
+      <text id="dl3" x="147.3" y="202.2" text-anchor="middle" class="kdaylbl">Wed</text>
+      <line x1="58.8" y1="185.6" x2="56.6" y2="190.1" class="kdaytick"/>
+      <text id="dl4" x="52.7" y="202.2" text-anchor="middle" class="kdaylbl">Thu</text>
+      <line x1="7.4" y1="121.1" x2="2.5" y2="122.3" class="kdaytick"/>
+      <text id="dl5" x="-6.3" y="128.3" text-anchor="middle" class="kdaylbl">Fri</text>
+      <line x1="25.7" y1="40.8" x2="21.8" y2="37.7" class="kdaytick"/>
+      <text id="dl6" x="14.8" y="36.0" text-anchor="middle" class="kdaylbl">Sat</text>
+      <g id="wk"><line x1="100" y1="100" x2="100" y2="38" class="kweek"/><circle cx="100" cy="34" r="6" class="kweektip"/></g>
+      <circle cx="100" cy="100" r="6" class="kweekhub"/>
+    </svg>
+  </section>
   <section class="card silvercard" aria-live="polite">
     <div class="label">Silver, per troy ounce <span aria-hidden="true">🪙</span></div>
     <div class="value" id="silver">…</div>
@@ -188,6 +235,45 @@ h1{animation:none}
     <div class="note" id="arcday"></div>
     <div class="note" id="arcnote" aria-live="polite"></div>
   </section>
+  <h2>Daylight change</h2>
+  <div class="cap" id="cap_dl"></div>
+  <section class="card">
+    <div class="label">Compared with yesterday <span aria-hidden="true">🌗</span></div>
+    <div class="value" id="dlbig">…</div>
+    <div class="note" id="dlnote"></div>
+    <div class="grid3" id="dltiles" style="margin-top:14px"></div>
+  </section>
+
+  <h2>Tide clock: Cannon Beach</h2>
+  <div class="cap" id="cap_tide">The ocean is on a schedule. Unlike me.</div>
+  <section class="card weekcard tidecard">
+    <div class="weektext">
+      <div class="label">Tide now <span aria-hidden="true">🌊</span></div>
+      <div class="big wkday tidestate" id="tidestate">…</div>
+      <div class="note" id="tideheight"></div>
+      <div class="tiles tidetiles" id="tidetiles"></div>
+      <ul class="tidelist" id="tidelist"></ul>
+      <p class="note" id="tidenote" aria-live="polite">Loading</p>
+    </div>
+    <svg id="tideclock" viewBox="-16 -16 232 232" role="img" aria-label="Tide clock: the hand points up at high tide and down at low tide">
+      <defs><clipPath id="tideclip"><circle cx="100" cy="100" r="89"/></clipPath></defs>
+      <circle cx="100" cy="100" r="92" class="kface"/>
+      <g clip-path="url(#tideclip)"><rect id="tidewater" x="0" y="100" width="200" height="200" class="tidewater"/></g>
+      <text x="100" y="-4" text-anchor="middle" class="kdaylbl">HIGH</text>
+      <text x="100" y="213" text-anchor="middle" class="kdaylbl">LOW</text>
+      <text x="152" y="104" text-anchor="middle" class="tidelbl">falling</text>
+      <text x="48" y="104" text-anchor="middle" class="tidelbl">rising</text>
+      <g id="tidehand"><line x1="100" y1="100" x2="100" y2="30" class="tidehandline"/><circle cx="100" cy="26" r="6" class="tidetip"/></g>
+      <circle cx="100" cy="100" r="6" class="tidehub"/>
+    </svg>
+  </section>
+  <h2>Snow line: Mt. Hood</h2>
+  <p class="note" id="snownote" aria-live="polite">Loading</p>
+  <div class="cap" id="cap_snow"></div>
+  <div class="grid3" id="snowtiles"></div>
+  <div class="chart" id="snowchart"></div>
+  <ul class="tidelist" id="snowlist"></ul>
+
   <h2>Moon</h2>
   <div class="cap">The moon&rsquo;s commute is below. No traffic up there.</div>
   <section class="card moonrow" style="margin-top:14px">
@@ -211,6 +297,15 @@ h1{animation:none}
   <div class="cap" id="cap_bar"></div>
   <div class="grid3" id="bartiles"></div>
   <div class="chart" id="barchart"></div>
+
+  <h2>Rain in the next 2 hours</h2>
+  <p class="note" id="ncnote" aria-live="polite">Loading</p>
+  <div class="cap" id="cap_nc"></div>
+  <section class="card">
+    <div class="value" id="ncbig">…</div>
+    <div class="note" id="ncsub"></div>
+  </section>
+  <div class="chart" id="ncchart"></div>
 
   <h2>Rainfall in Portland</h2>
   <p class="note" id="rainnote" aria-live="polite">Loading</p>
@@ -282,12 +377,17 @@ function tick(){
   var now=Date.now();
   $("now").textContent=new Date(now).toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"});
   var cp=new Intl.DateTimeFormat("en-US",{timeZone:TZ,hourCycle:"h23",hour:"numeric",minute:"numeric",second:"numeric"}).formatToParts(new Date(now)), ch=0,cm=0,cs=0;
+  var wd=new Intl.DateTimeFormat("en-US",{timeZone:TZ,weekday:"short"}).format(new Date(now)), dow=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].indexOf(wd);
   cp.forEach(function(x){if(x.type==="hour")ch=+x.value;if(x.type==="minute")cm=+x.value;if(x.type==="second")cs=+x.value});
+  for(var di=0;di<7;di++)$("dl"+di).setAttribute("class","kdaylbl"+(di===dow?" today":""));
+  $("wkday").textContent=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][dow];
+  $("wk").setAttribute("transform","rotate("+(((dow*86400+ch*3600+cm*60+cs)/604800)*360)+" 100 100)");
   $("hh").setAttribute("transform","rotate("+(((ch%12)+cm/60+cs/3600)*30)+" 100 100)");
   $("mh").setAttribute("transform","rotate("+((cm+cs/60)*6)+" 100 100)");
 
   $("today").textContent=new Date(now).toLocaleDateString("en-US",{timeZone:TZ,weekday:"long",month:"long",day:"numeric",year:"numeric"});
   var p=pacificYMD(now);
+  var dkey=p.join("-"); if(dkey!==window.dlKey){window.dlKey=dkey;showDaylight(p)}
   var today=dayTimes(p[0],p[1],p[2]);
   var tm=new Date(Date.UTC(p[0],p[1]-1,p[2]+1));
   var tomorrow=dayTimes(tm.getUTCFullYear(),tm.getUTCMonth()+1,tm.getUTCDate());
@@ -492,7 +592,8 @@ function tfetch(url,opts,ms){
     fetch(url,opts||{}).then(function(r){if(!done){done=true;clearTimeout(t);resolve(r)}},function(e){if(!done){done=true;clearTimeout(t);reject(e)}});
   });
 }
-function omFetch(url){
+function omFetch(url,key){
+  key=key||"hourly";
   return tfetch(url,{cache:"no-store"},10000).then(function(r){
     return r.text().then(function(txt){
       var j=null; try{j=JSON.parse(txt)}catch(x){}
@@ -501,7 +602,7 @@ function omFetch(url){
         throw new Error("Open-Meteo answered HTTP "+r.status+(r.statusText?" "+r.statusText:"")+": "+why);
       }
       if(!j)throw new Error("Open-Meteo sent a reply that isn't valid data: "+txt.slice(0,100));
-      if(!j.hourly||!j.hourly.time)throw new Error("Open-Meteo reply had no hourly data. Reply began: "+txt.slice(0,150));
+      if(!j[key]||!j[key].time)throw new Error("Open-Meteo reply had no "+key+" data. Reply began: "+txt.slice(0,150));
       return j;
     });
   },function(e){
@@ -638,6 +739,223 @@ showRepos(); setInterval(showRepos,600000);
 
 var PHASECAP={"New Moon":"Invisible. Like my motivation on Mondays.","Waxing Crescent":"A tiny smile in the sky.","First Quarter":"Half a moon. Half the effort.","Waxing Gibbous":"Almost full. Fashionably late as always.","Full Moon":"Howl if you want to. No judgment.","Waning Gibbous":"Past its prime, still looking good.","Last Quarter":"Half a moon, half done, full of attitude.","Waning Crescent":"Running on fumes, like the rest of us."};
 function pick(a,seed){return a[seed%a.length]}
+
+// ---- Rain in the next 2 hours (Open-Meteo 15-minute forecast) ----
+var RAINTHR=0.004; // inches per 15 minutes (about 0.1 mm)
+function rainWord(v){return v<RAINTHR?"dry":(v<0.02?"light rain":(v<0.06?"steady rain":"heavy rain"))}
+function drawNowcast(slots){
+  var W=720,H=230,L=56,R=14,T=14,B=48,i, mx=0;
+  slots.forEach(function(q){mx=Math.max(mx,q.v)}); mx=Math.max(0.04,Math.ceil(mx/0.04)*0.04);
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"Bar chart of forecast rain in each 15 minutes for the next 2 hours in Portland"});
+  var pw=W-L-R, ph=H-T-B;
+  for(i=0;i<=4;i++){
+    var y=T+ph-ph*i/4;
+    svg.appendChild(el("line",{x1:L,x2:W-R,y1:y,y2:y,"class":"gl"}));
+    svg.appendChild(el("text",{x:L-8,y:y+4,"text-anchor":"end","class":"ax"},(mx*i/4).toFixed(2)));
+  }
+  var bw=pw/slots.length;
+  slots.forEach(function(q,k){
+    var h=ph*q.v/mx, x=L+bw*k+bw*0.15;
+    var r=el("rect",{x:x,y:T+ph-h,width:bw*0.7,height:Math.max(h,q.v>=RAINTHR?2:0),"class":"bar"});
+    r.appendChild(el("title",{},(k===0?"Right now":fmt(q.t))+": "+q.v.toFixed(3)+" in in this 15 minutes ("+rainWord(q.v)+")"));
+    svg.appendChild(r);
+    if(k%2===0)svg.appendChild(el("text",{x:L+bw*k+bw/2,y:H-26,"text-anchor":"middle","class":"ax"},k===0?"now":fmt(q.t).replace(" ","")));
+  });
+  svg.appendChild(el("text",{x:L+pw/2,y:H-4,"text-anchor":"middle","class":"ax"},"Forecast rain in each 15 minutes, inches"));
+  var c=$("ncchart"); c.textContent=""; c.appendChild(svg);
+}
+function showNowcast(){
+  omFetch("https://api.open-meteo.com/v1/forecast?latitude=45.52&longitude=-122.68&minutely_15=precipitation&forecast_minutely_15=12&past_minutely_15=2&precipitation_unit=inch&timezone=America%2FLos_Angeles&timeformat=unixtime","minutely_15")
+  .then(function(d){
+    var t=d.minutely_15.time, p=d.minutely_15.precipitation, nowS=Date.now()/1000, now=Date.now(), slots=[], i;
+    for(i=0;i<t.length;i++){ if(t[i]+900>nowS && typeof p[i]==="number") slots.push({t:t[i]*1000,v:p[i]}); }
+    slots=slots.slice(0,8);
+    if(slots.length<8)throw new Error("Open-Meteo only sent "+slots.length+" of the 8 fifteen-minute slots needed");
+    var total=0,mx=0; slots.forEach(function(q){total+=q.v;mx=Math.max(mx,q.v)});
+    var big,sub,j;
+    if(slots[0].v>=RAINTHR){
+      for(j=1;j<slots.length;j++){if(slots[j].v<RAINTHR)break}
+      if(j<slots.length){var m=Math.max(1,Math.round((slots[j].t-now)/60000));big="Raining now";sub="Looks like it eases off in about "+left(m*60000)+".";window.ncKind="stops"}
+      else{big="Raining now";sub="And it keeps going for the next 2 hours.";window.ncKind="keeps"}
+    }else{
+      for(j=1;j<slots.length;j++){if(slots[j].v>=RAINTHR)break}
+      if(j<slots.length){var m2=Math.max(1,Math.round((slots[j].t-now)/60000));big="Rain in about "+left(m2*60000);sub="Expect "+rainWord(slots[j].v)+" to start around "+fmt(slots[j].t)+".";window.ncKind="soon"}
+      else{big="Dry for 2 hours";sub="No rain expected through "+fmt(slots[7].t+900000)+".";window.ncKind="dry"}
+    }
+    sub+=" Total forecast for the next 2 hours: "+total.toFixed(2)+" in.";
+    $("ncbig").textContent=big; $("ncsub").textContent=sub;
+    drawNowcast(slots);
+    $("ncnote").className="note";
+    $("ncnote").textContent="Forecast (modeled), not a radar or a rain gauge. Updated "+new Date().toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})+". Refreshes every 10 minutes.";
+  }).catch(function(e){
+    $("ncnote").className="note err";
+    $("ncnote").textContent="Couldn't load the 2-hour rain forecast. "+errText(e)+". (Will retry in 10 minutes.)";
+  });
+}
+showNowcast(); setInterval(showNowcast,600000);
+
+// ---- Daylight change ----
+function dayLen(p,off){
+  var d=new Date(Date.UTC(p[0],p[1]-1,p[2]+off)), t=dayTimes(d.getUTCFullYear(),d.getUTCMonth()+1,d.getUTCDate());
+  return t?t.set-t.rise:null;
+}
+function mmss(ms){var s=Math.round(Math.abs(ms)/1000), m=Math.floor(s/60); return m+" min "+(s%60)+" sec"}
+function hm(ms){var m=Math.round(ms/60000); return Math.floor(m/60)+" h "+(m%60)+" m"}
+function showDaylight(p){
+  var y=dayLen(p,-1), t0=dayLen(p,0), w=dayLen(p,7);
+  if(y===null||t0===null||w===null){$("dlbig").textContent="n/a";return}
+  var dlt=t0-y, longer=dlt>=0;
+  window.dlDir=longer?"longer":"shorter";
+  $("dlbig").textContent=mmss(dlt)+(longer?" longer":" shorter");
+  var sign0=longer?1:-1, k, turn=null;
+  for(k=1;k<260;k++){var dk=dayLen(p,k+1)-dayLen(p,k); if((dk>=0?1:-1)!==sign0){turn=k;break}}
+  var note=longer?"The days are getting longer.":"The days are getting shorter.";
+  if(turn!==null){
+    var td=new Date(Date.UTC(p[0],p[1]-1,p[2]+turn,12));
+    note+=" The "+(longer?"longest":"shortest")+" day is about "+td.toLocaleDateString("en-US",{timeZone:"UTC",weekday:"long",month:"long",day:"numeric"})+", "+turn+(turn===1?" day":" days")+" from now.";
+  }
+  $("dlnote").textContent=note;
+  var tl=$("dltiles"); tl.textContent="";
+  [["Today",hm(t0),"of daylight"],["Yesterday",hm(y),"of daylight"],["Next 7 days",mmss(w-t0)+(w>=t0?" longer":" shorter"),"than today, in total"]].forEach(function(x){
+    var tile=document.createElement("div"); tile.className="tile";
+    var a=document.createElement("div"); a.className="note"; a.textContent=x[0];
+    var b=document.createElement("div"); b.className="v"; b.textContent=x[1];
+    var c=document.createElement("div"); c.className="note"; c.textContent=x[2];
+    tile.appendChild(a);tile.appendChild(b);tile.appendChild(c);tl.appendChild(tile);
+  });
+}
+
+// ---- Snow line, Mt. Hood (Open-Meteo freezing level) ----
+var SNOWSPOTS=[["Portland",50],["Government Camp",3900],["Timberline Lodge",6000]];
+function ftr(m){return m*3.28084}
+function round100(f){return Math.round(f/100)*100}
+function commas(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,",")}
+function drawSnow(fz,t0){
+  var W=720,H=260,L=64,R=14,T=14,B=48,i, mx=7500;
+  fz.forEach(function(v){mx=Math.max(mx,v+500)}); mx=Math.ceil(mx/1000)*1000;
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"Line chart of the forecast freezing level over Mt. Hood for the next 24 hours, in feet"});
+  var pw=W-L-R, ph=H-T-B, n=fz.length;
+  for(i=0;i<=4;i++){
+    var y=T+ph-ph*i/4;
+    svg.appendChild(el("line",{x1:L,x2:W-R,y1:y,y2:y,"class":"gl"}));
+    svg.appendChild(el("text",{x:L-8,y:y+4,"text-anchor":"end","class":"ax"},commas(Math.round(mx*i/4))));
+  }
+  [["Government Camp",3900],["Timberline",6000]].forEach(function(sp){
+    var y=T+ph-ph*sp[1]/mx;
+    svg.appendChild(el("line",{x1:L,x2:W-R,y1:y,y2:y,stroke:"#1e6bff","stroke-dasharray":"6 5","stroke-width":2}));
+    svg.appendChild(el("text",{x:W-R-4,y:y-5,"text-anchor":"end","class":"ax"},sp[0]+" "+commas(sp[1])+" ft"));
+  });
+  var pts=[]; fz.forEach(function(v,k){pts.push((L+pw*k/(n-1)).toFixed(1)+","+(T+ph-ph*Math.max(0,v)/mx).toFixed(1))});
+  svg.appendChild(el("polyline",{points:pts.join(" "),"class":"pline"}));
+  for(i=0;i<n;i+=6){
+    svg.appendChild(el("text",{x:L+pw*i/(n-1),y:H-26,"text-anchor":i===0?"start":(i>=n-1?"end":"middle"),"class":"ax"},i===0?"now":fmt(t0+i*3600000).replace(" ","")));
+  }
+  svg.appendChild(el("text",{x:L+pw/2,y:H-4,"text-anchor":"middle","class":"ax"},"Freezing level over Mt. Hood, feet above sea level, next 24 hours"));
+  var c=$("snowchart"); c.textContent=""; c.appendChild(svg);
+}
+function showSnow(){
+  omFetch("https://api.open-meteo.com/v1/forecast?latitude=45.3736&longitude=-121.6959&hourly=freezing_level_height,snowfall&precipitation_unit=inch&past_hours=1&forecast_hours=25&timezone=America%2FLos_Angeles&timeformat=unixtime")
+  .then(function(d){
+    var t=d.hourly.time, f=d.hourly.freezing_level_height, sn=d.hourly.snowfall, nowS=Date.now()/1000, i0=-1, i;
+    for(i=0;i<t.length;i++){if(t[i]<=nowS)i0=i}
+    if(i0<0)throw new Error("Open-Meteo reply didn't include the current hour");
+    var fz=[], snow=0;
+    for(i=i0;i<Math.min(t.length,i0+25);i++){ if(typeof f[i]==="number")fz.push(ftr(f[i])); if(typeof sn[i]==="number"&&i>i0)snow+=sn[i]; }
+    if(fz.length<12)throw new Error("Open-Meteo only sent "+fz.length+" hours of freezing-level data");
+    var cur=fz[0], line=Math.max(0,cur-1000), mn=Math.min.apply(null,fz), mx=Math.max.apply(null,fz);
+    window.snowKind=line<3900?"low":(line<6000?"mid":"high");
+    var tl=$("snowtiles"); tl.textContent="";
+    [["Freezing level now",commas(round100(cur))+" ft","Where the air hits 32\u00B0F"],["Snow line (rough)",commas(round100(line))+" ft","About 1,000 ft below freezing level"],["Next 24 hours",commas(round100(mn))+" to "+commas(round100(mx))+" ft","Range of freezing level"]].forEach(function(x){
+      var tile=document.createElement("div"); tile.className="tile";
+      var a=document.createElement("div"); a.className="note"; a.textContent=x[0];
+      var b=document.createElement("div"); b.className="v"; b.textContent=x[1];
+      var c=document.createElement("div"); c.className="note"; c.textContent=x[2];
+      tile.appendChild(a);tile.appendChild(b);tile.appendChild(c);tl.appendChild(tile);
+    });
+    drawSnow(fz,t[i0]*1000);
+    var ul=$("snowlist"); ul.textContent="";
+    SNOWSPOTS.forEach(function(sp){
+      var li=document.createElement("li"), b=document.createElement("b"), sp2=document.createElement("span");
+      b.textContent=sp[0]; b.style.minWidth="11em";
+      sp2.textContent=commas(sp[1])+" ft: precipitation falls as "+(sp[1]>=line?"snow":"rain")+" right now";
+      li.appendChild(b);li.appendChild(sp2);ul.appendChild(li);
+    });
+    var li2=document.createElement("li"), b2=document.createElement("b"), s3=document.createElement("span");
+    b2.textContent="Mt. Hood snowfall"; b2.style.minWidth="11em"; s3.textContent="About "+snow.toFixed(1)+" in forecast over the next 24 hours (model estimate)";
+    li2.appendChild(b2);li2.appendChild(s3);ul.appendChild(li2);
+    $("snownote").className="note";
+    $("snownote").textContent="Modeled forecast for Mt. Hood. The snow line is a rule of thumb (snow usually reaches about 1,000 ft below the freezing level), so real conditions vary. Updated "+new Date().toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})+".";
+  }).catch(function(e){
+    $("snownote").className="note err";
+    $("snownote").textContent="Couldn't load the snow line. "+errText(e)+". (Will retry in 10 minutes.)";
+  });
+}
+showSnow(); setInterval(showSnow,600000);
+
+// ---- Tide clock (NOAA CO-OPS predictions, Seaside station, nearest to Cannon Beach) ----
+var TIDE_STATION="9438478", tideData=null, tideFetched=0;
+function ymdUTC(ms){var d=new Date(ms);return d.getUTCFullYear()+("0"+(d.getUTCMonth()+1)).slice(-2)+("0"+d.getUTCDate()).slice(-2)}
+function loadTides(){
+  var now=Date.now();
+  var url="https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=live_data_experiment&station="+TIDE_STATION+"&begin_date="+ymdUTC(now-86400000)+"&end_date="+ymdUTC(now+3*86400000)+"&datum=MLLW&time_zone=gmt&units=english&interval=hilo&format=json";
+  tfetch(url,{cache:"no-store"},10000).then(function(r){
+    return r.text().then(function(txt){
+      var j=null; try{j=JSON.parse(txt)}catch(x){}
+      if(!r.ok||(j&&j.error)){
+        var why=(j&&j.error&&j.error.message)?j.error.message:(txt?txt.slice(0,150):"no details");
+        throw new Error("NOAA answered HTTP "+r.status+": "+why);
+      }
+      if(!j||!j.predictions||!j.predictions.length)throw new Error("NOAA reply had no tide predictions. Reply began: "+txt.slice(0,150));
+      tideData=j.predictions.map(function(q){return {t:Date.parse(q.t.replace(" ","T")+":00Z"),v:parseFloat(q.v),hi:q.type==="H"}}).filter(function(q){return !isNaN(q.t)&&!isNaN(q.v)});
+      tideFetched=Date.now();
+      drawTide();
+    });
+  },function(e){
+    if(e&&(e.name==="TimeoutError"||e.name==="AbortError"))throw new Error("No answer from NOAA after 10 seconds (timed out)");
+    throw new Error("Couldn't reach NOAA ("+((e&&e.message)||"network error")+"). Check your internet connection or an ad/content blocker");
+  }).catch(function(e){
+    $("tidenote").className="note err";
+    $("tidenote").textContent="Couldn't load tides. "+errText(e)+". (Will retry in 30 minutes.)";
+  });
+}
+function drawTide(){
+  if(!tideData)return;
+  var now=Date.now(), i=-1;
+  for(var k=0;k<tideData.length-1;k++){if(tideData[k].t<=now&&now<tideData[k+1].t){i=k;break}}
+  if(i<0){$("tidenote").className="note err";$("tidenote").textContent="Tide data has run out of range. Refreshing.";if(Date.now()-tideFetched>60000)loadTides();return}
+  var a=tideData[i], b=tideData[i+1], f=(now-a.t)/(b.t-a.t);
+  var h=a.v+(b.v-a.v)*(1-Math.cos(Math.PI*f))/2;
+  var falling=!b.hi;
+  var ang=falling?180*f:180+180*f;
+  $("tidehand").setAttribute("transform","rotate("+ang.toFixed(1)+" 100 100)");
+  var mn=Infinity,mx=-Infinity; tideData.forEach(function(q){mn=Math.min(mn,q.v);mx=Math.max(mx,q.v)});
+  var lvl=mx>mn?(h-mn)/(mx-mn):0.5, y=189-lvl*178;
+  $("tidewater").setAttribute("y",y.toFixed(1));
+  $("tidestate").textContent=falling?"Falling":"Rising";
+  window.tideWord=falling?"falling":"rising";
+  $("tideheight").textContent="About "+h.toFixed(1)+" feet above the average low-tide line.";
+  var nh=null,nl=null;
+  for(var m=i+1;m<tideData.length;m++){if(tideData[m].hi&&!nh)nh=tideData[m];if(!tideData[m].hi&&!nl)nl=tideData[m]}
+  var tl=$("tidetiles"); tl.textContent="";
+  [["Next high",nh],["Next low",nl]].forEach(function(x){
+    var q=x[1]; if(!q)return;
+    var tile=document.createElement("div"); tile.className="tile";
+    var l1=document.createElement("div"); l1.className="note"; l1.textContent=x[0];
+    var l2=document.createElement("div"); l2.className="v"; l2.textContent=fmt(q.t);
+    var l3=document.createElement("div"); l3.className="note"; l3.textContent=dayWord(q.t,now)+", "+q.v.toFixed(1)+" ft, in "+left(q.t-now);
+    tile.appendChild(l1);tile.appendChild(l2);tile.appendChild(l3);tl.appendChild(tile);
+  });
+  var ul=$("tidelist"); ul.textContent="";
+  tideData.filter(function(q){return q.t>now}).slice(0,6).forEach(function(q){
+    var li=document.createElement("li");
+    var bb=document.createElement("b"); bb.textContent=q.hi?"High":"Low";
+    var sp=document.createElement("span"); sp.textContent=dayWord(q.t,now)+" "+fmt(q.t)+", "+q.v.toFixed(1)+" ft";
+    li.appendChild(bb);li.appendChild(sp);ul.appendChild(li);
+  });
+  $("tidenote").className="note";
+  $("tidenote").textContent="Predictions for Seaside (12th Avenue bridge, Necanicum River), the nearest NOAA station to Cannon Beach, about 8 miles north. Cannon Beach times can differ by some minutes. Heights are in feet above the average lowest tide of the day (MLLW). Updated "+new Date(tideFetched).toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})+".";
+}
+loadTides(); setInterval(loadTides,1800000); setInterval(drawTide,15000);
 function captions(){
   var now=new Date(), h=Number(now.toLocaleString("en-US",{timeZone:TZ,hour:"numeric",hour12:false}))%24, k=Math.floor(Date.now()/60000);
   var c;
@@ -650,6 +968,13 @@ function captions(){
   else c=pick(["Almost bedtime. Almost.","One more look at the moon, then sleep.","Past your bedtime and you know it.","Brush your teeth. The barometer says so.","Tomorrow you will thank tonight you.","Screen time is over. Sort of."],k);
   $("cap_now").textContent=c;
   $("cap_silver").textContent=pick(SILVERCAPS,k);
+  var nk=window.ncKind;
+  if(nk)$("cap_nc").textContent=pick(nk==="dry"?["Clear skies ahead. Go touch some grass.","Dry spell. Suspicious for Oregon.","No rain in sight. Umbrella can stay home."]:nk==="soon"?["Rain is on its way. Cue the hoodie.","Incoming drizzle. Oregon classic.","Get your umbrella warmed up."]:nk==="stops"?["It's wet now, but the sky is almost done.","Hang on. The rain is wrapping up.","Light at the end of the drizzle."]:["Settle in. The rain is not leaving.","Rain's staying for dinner.","Water everywhere. Very on brand."],k);
+  var dd=window.dlDir;
+  if(dd)$("cap_dl").textContent=pick(dd==="longer"?["Daylight is growing. Sunscreen sales are up.","More sun every day. The universe is trying.","Days are stretching. Spring is on the way."]:["Daylight is shrinking. The sun is leaving early.","Less sun every day. Hot cocoa season.","Days are getting shorter. Blame the tilt."],k);
+  var sk=window.snowKind;
+  if(sk)$("cap_snow").textContent=pick(sk==="low"?["Snow is low. Mt. Hood is in its fluffy era.","Powder alert. Even Government Camp gets a coat.","The snow line is way down. Cozy."]:sk==="mid"?["Snow at the top, rain in the middle.","Timberline gets snow. Everyone else gets wet.","Fresh snow up high. Maybe."]:["Snow line is way up. The mountain wears rain boots.","Rain all the way up. Skis are sulking.","Warm up there. No fluffy stuff."],k);
+  if(window.tideWord)$("cap_tide").textContent=pick(window.tideWord==="rising"?["The tide is coming in. The beach is shrinking.","Water's rising. The sand is losing a fight.","Incoming! Keep your shoes above the line.","The ocean is creeping closer. Casually."]:["The tide is heading out. The beach is growing.","Water's leaving. The sand is back from vacation.","Outgoing tide. Tidepools are open for business.","The ocean is backing away slowly. Good ocean."],k);
   var rl=$("riseleft").textContent, sl=$("setleft").textContent;
   $("cap_rise").textContent=/ago/.test(rl)?"The sun clocked in. Somebody has to.":"The sun is still hitting snooze.";
   $("cap_set").textContent=/ago/.test(sl)?"The sun clocked out. Lucky sun.":"The sun is eyeing the exit.";
