@@ -905,17 +905,27 @@ function showSnow(){
     });
     drawSnow(fz,t[i0]*1000);
     var ul=$("snowlist"); ul.textContent="";
+    var t0ms=t[i0]*1000;
+    function snowPhase(elev,k){return fz[k]===null?null:(elev>=Math.max(0,fz[k]-1000)?"snow":"rain")}
+    function changeInfo(elev){
+      var now0=snowPhase(elev,0), k, ph;
+      for(k=1;k<fz.length;k++){ph=snowPhase(elev,k); if(ph&&ph!==now0)return {now:now0,to:ph,at:t0ms+k*3600000}}
+      return {now:now0,to:null,at:null};
+    }
     SNOWSPOTS.forEach(function(sp){
-      var li=document.createElement("li"), b=document.createElement("b"), sp2=document.createElement("span");
+      var li=document.createElement("li"), b=document.createElement("b"), sp2=document.createElement("span"), ci=changeInfo(sp[1]);
       b.textContent=sp[0]; b.style.minWidth="11em";
-      sp2.textContent=commas(sp[1])+" ft: precipitation falls as "+(sp[1]>=line?"snow":"rain")+" right now";
+      sp2.textContent=commas(sp[1])+" ft: "+ci.now+" now. "+(ci.to?"Changes to "+ci.to+" around "+fmt(ci.at)+".":"Stays "+ci.now+" for the next 24 hours.");
       li.appendChild(b);li.appendChild(sp2);ul.appendChild(li);
     });
     var li2=document.createElement("li"), b2=document.createElement("b"), s3=document.createElement("span");
-    b2.textContent="Mt. Hood snowfall"; b2.style.minWidth="11em"; s3.textContent="About "+snow.toFixed(1)+" in forecast over the next 24 hours (model estimate)";
+    var gc=changeInfo(3900), tl2=changeInfo(6000);
+    function chg(name,ci){return name+": "+(ci.to?"changes from "+ci.now+" to "+ci.to+" around "+fmt(ci.at):"stays "+ci.now+" all day")}
+    b2.textContent="Mt. Hood snowfall"; b2.style.minWidth="11em";
+    s3.textContent="About "+snow.toFixed(1)+" in forecast over the next 24 hours (model estimate). "+chg("Government Camp",gc)+"; "+chg("Timberline",tl2)+".";
     li2.appendChild(b2);li2.appendChild(s3);ul.appendChild(li2);
     $("snownote").className="note";
-    $("snownote").textContent="Modeled forecast for Mt. Hood. The snow line is a rule of thumb (snow usually reaches about 1,000 ft below the freezing level), so real conditions vary. Updated "+new Date().toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})+".";
+    $("snownote").textContent="Modeled forecast for Mt. Hood. The snow line is a rule of thumb (snow usually reaches about 1,000 ft below the freezing level), so real conditions vary, and snow or rain only applies when precipitation is actually falling. Updated "+new Date().toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})+".";
   }).catch(function(e){
     $("snownote").className="note err";
     $("snownote").textContent="Couldn't load the snow line. "+errText(e)+". (Will retry in 10 minutes.)";
@@ -925,39 +935,48 @@ $("snowtoggle").addEventListener("click",function(){snowFull=!snowFull;if(window
 showSnow(); setInterval(showSnow,600000);
 
 // ---- Tide clock (NOAA CO-OPS predictions, Seaside station, nearest to Cannon Beach) ----
-var TIDE_STATION="9438478", tideData=null, tideFetched=0;
+var TIDE_STATIONS=[["9438772","Seaside (12th Avenue bridge, Necanicum River)","about 8 miles north of Cannon Beach"],["9438478","Seaside (12th Avenue bridge, Necanicum River)","about 8 miles north of Cannon Beach"],["9437540","Garibaldi (Tillamook Bay)","about 25 miles south of Cannon Beach, so times can differ more"]], tideSt=0, tideData=null, tideFetched=0;
 function ymdUTC(ms){var d=new Date(ms);return d.getUTCFullYear()+("0"+(d.getUTCMonth()+1)).slice(-2)+("0"+d.getUTCDate()).slice(-2)}
-var TIDE_DATUMS=[["MLLW","the average lowest tide of the day (MLLW)"],["CRD","the Columbia River Datum"],["MSL","mean sea level"],["STND","the station's own zero point"]], tideDatum=0;
-function loadTides(i){
-  i=i||0;
+var TIDE_DATUMS=[["MLLW","the average lowest tide of the day (MLLW)"],["CRD","the Columbia River Datum"],["MSL","mean sea level"],["STND","the station's own zero point"]], tideDatum=0, tideLog=[];
+function loadTides(si,di){
+  if(si===undefined){si=tideSt;di=tideDatum;tideLog=[]}
   var now=Date.now();
-  var url="https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=live_data_experiment&station="+TIDE_STATION+"&begin_date="+ymdUTC(now-86400000)+"&end_date="+ymdUTC(now+3*86400000)+"&datum="+TIDE_DATUMS[i][0]+"&time_zone=gmt&units=english&interval=hilo&format=json";
+  var url="https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=live_data_experiment&station="+TIDE_STATIONS[si][0]+"&begin_date="+ymdUTC(now-86400000)+"&end_date="+ymdUTC(now+3*86400000)+"&datum="+TIDE_DATUMS[di][0]+"&time_zone=gmt&units=english&interval=hilo&format=json";
+  function nextTry(){
+    if(di+1<TIDE_DATUMS.length)return loadTides(si,di+1);
+    if(si+1<TIDE_STATIONS.length)return loadTides(si+1,0);
+    return false;
+  }
   tfetch(url,{cache:"no-store"},10000).then(function(r){
     return r.text().then(function(txt){
       var j=null; try{j=JSON.parse(txt)}catch(x){}
       if(!r.ok||(j&&j.error)){
         var why=(j&&j.error&&j.error.message)?j.error.message:(txt?txt.slice(0,150):"no details");
-        var er=new Error("NOAA answered HTTP "+r.status+": "+why); er.datumProblem=/datum/i.test(why); throw er;
+        var er=new Error("NOAA answered HTTP "+r.status+": "+why); er.retryOther=true; er.stationBad=!/datum/i.test(why); throw er;
       }
-      if(!j||!j.predictions||!j.predictions.length)throw new Error("NOAA reply had no tide predictions. Reply began: "+txt.slice(0,150));
+      if(!j||!j.predictions||!j.predictions.length){var e2=new Error("NOAA reply had no tide predictions. Reply began: "+txt.slice(0,150)); e2.retryOther=true; e2.stationBad=true; throw e2}
       tideData=j.predictions.map(function(q){return {t:Date.parse(q.t.replace(" ","T")+":00Z"),v:parseFloat(q.v),hi:q.type==="H"}}).filter(function(q){return !isNaN(q.t)&&!isNaN(q.v)});
-      tideFetched=Date.now(); tideDatum=i;
+      tideFetched=Date.now(); tideSt=si; tideDatum=di;
       drawTide();
     });
   },function(e){
     if(e&&(e.name==="TimeoutError"||e.name==="AbortError"))throw new Error("No answer from NOAA after 10 seconds (timed out)");
     throw new Error("Couldn't reach NOAA ("+((e&&e.message)||"network error")+"). Check your internet connection or an ad/content blocker");
   }).catch(function(e){
-    if(e&&e.datumProblem&&i+1<TIDE_DATUMS.length){loadTides(i+1);return}
+    tideLog.push(TIDE_STATIONS[si][0]+"/"+TIDE_DATUMS[di][0]);
+    if(e&&e.retryOther){
+      if(e.stationBad&&si+1<TIDE_STATIONS.length){return loadTides(si+1,0)}
+      if(nextTry()!==false)return;
+    }
     $("tidenote").className="note err";
-    $("tidenote").textContent="Couldn't load tides. "+errText(e)+(e&&e.datumProblem?" (tried: "+TIDE_DATUMS.map(function(d){return d[0]}).join(", ")+")":"")+". (Will retry in 30 minutes.)";
+    $("tidenote").textContent="Couldn't load tides. "+errText(e)+(e&&e.retryOther?" (tried: "+tideLog.join(", ")+")":"")+". (Will retry in 30 minutes.)";
   });
 }
 function drawTide(){
   if(!tideData)return;
   var now=Date.now(), i=-1;
   for(var k=0;k<tideData.length-1;k++){if(tideData[k].t<=now&&now<tideData[k+1].t){i=k;break}}
-  if(i<0){$("tidenote").className="note err";$("tidenote").textContent="Tide data has run out of range. Refreshing.";if(Date.now()-tideFetched>60000)loadTides(0);return}
+  if(i<0){$("tidenote").className="note err";$("tidenote").textContent="Tide data has run out of range. Refreshing.";if(Date.now()-tideFetched>60000)loadTides();return}
   var a=tideData[i], b=tideData[i+1], f=(now-a.t)/(b.t-a.t);
   var h=a.v+(b.v-a.v)*(1-Math.cos(Math.PI*f))/2;
   var falling=!b.hi;
@@ -988,9 +1007,9 @@ function drawTide(){
     li.appendChild(bb);li.appendChild(sp);ul.appendChild(li);
   });
   $("tidenote").className="note";
-  $("tidenote").textContent="Predictions for Seaside (12th Avenue bridge, Necanicum River), the nearest NOAA station to Cannon Beach, about 8 miles north. Cannon Beach times can differ by some minutes. Heights are in feet, measured from "+TIDE_DATUMS[tideDatum][1]+". Updated "+new Date(tideFetched).toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})+".";
+  $("tidenote").textContent="Predictions for "+TIDE_STATIONS[tideSt][1]+", the closest NOAA station that works for Cannon Beach, "+TIDE_STATIONS[tideSt][2]+". Cannon Beach times can differ by some minutes. Heights are in feet, measured from "+TIDE_DATUMS[tideDatum][1]+". Updated "+new Date(tideFetched).toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})+".";
 }
-loadTides(0); setInterval(function(){loadTides(0)},1800000); setInterval(drawTide,15000);
+loadTides(); setInterval(function(){loadTides()},1800000); setInterval(drawTide,15000);
 function captions(){
   var now=new Date(), h=Number(now.toLocaleString("en-US",{timeZone:TZ,hour:"numeric",hour12:false}))%24, k=Math.floor(Date.now()/60000);
   var c;
