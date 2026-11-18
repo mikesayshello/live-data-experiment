@@ -48,7 +48,7 @@ html{scroll-behavior:smooth}
 .ax{fill:var(--muted);font-size:12px;font-family:system-ui,sans-serif}
 .gl{stroke:var(--line);stroke-width:1}
 .bar{fill:var(--accent)}
-@media(max-width:600px){.tiles{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.tiles{grid-template-columns:repeat(3,1fr)}#mttiles{grid-template-columns:repeat(2,1fr)}}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
 .moonrow{display:flex;gap:22px;align-items:center}
 .moonrow svg{width:120px;height:120px;flex:none}
@@ -97,6 +97,17 @@ section.card:nth-of-type(odd){background:#fffdf5}
 .twave{fill:rgba(30,107,255,.20);stroke:none}
 .tline{fill:none;stroke:#0a7ea4;stroke-width:3;stroke-linejoin:round}
 .tnow{stroke:#ff7a00;stroke-width:2;stroke-dasharray:5 4}
+#mttiles{grid-template-columns:repeat(3,1fr)}
+#mttiles .v{font-size:26px}
+#mtalert{margin-top:12px}
+@media(max-width:600px){#mttiles{grid-template-columns:repeat(2,1fr)}#mttiles .v{font-size:21px}}
+.mtbar{height:16px;border:3px solid var(--ink);border-radius:10px;background:#fff;overflow:hidden;margin-top:10px}
+.mtbar span{display:block;height:100%;width:50%;background:#1e6bff}
+.mtscale{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px}
+.gloss{margin-top:14px;background:var(--surface);border:3px solid var(--ink);border-radius:16px;box-shadow:6px 6px 0 var(--ink);padding:12px 16px}
+.gloss summary{cursor:pointer;font-weight:700}
+.gloss dt{font-weight:700;margin-top:10px}
+.gloss dd{margin:2px 0 0}
 .tidewater{fill:rgba(30,107,255,.30)}
 .tidehandline{stroke:#0a7ea4;stroke-width:4;stroke-linecap:round}
 .tidetip{fill:#0a7ea4;stroke:var(--ink);stroke-width:1.5}
@@ -275,6 +286,33 @@ h1{animation:none}
     </svg>
   </section>
   <div class="chart" id="tidechart"></div>
+  <h2>Tides and the moon</h2>
+  <p class="note" id="mtnote" aria-live="polite">Loading</p>
+  <section class="card">
+    <div class="label">Tide strength this week <span aria-hidden="true">🌙🌊</span></div>
+    <div class="big wkday" id="mtbig">…</div>
+    <div class="note" id="mtsub"></div>
+    <div class="mtbar" role="img" aria-label="Tide strength meter" id="mtbar"><span id="mtfill"></span></div>
+    <div class="mtscale"><span>Neap (small)</span><span>Spring (big)</span></div>
+    <div class="tiles" id="mttiles" style="margin-top:14px"></div>
+    <p class="note" id="mtalert"></p>
+  </section>
+  <details class="gloss">
+    <summary>What do these words mean?</summary>
+    <dl>
+      <dt>Spring tide</dt><dd>Nothing to do with the season. It's the biggest kind of tide, with the highest highs and lowest lows. It happens around the new moon and the full moon, when the sun and moon pull on the ocean in a line.</dd>
+      <dt>Neap tide</dt><dd>The smallest kind of tide, with highs that aren't as high and lows that aren't as low. It happens around the first and last quarter moon, when the sun and moon pull from different directions and partly cancel out.</dd>
+      <dt>Perigee</dt><dd>The point in the moon's orbit where it's closest to Earth, roughly 226,000 miles away on average. Its pull is a bit stronger then, so tides get bigger.</dd>
+      <dt>Apogee</dt><dd>The point where the moon is farthest from Earth, roughly 252,000 miles on average. Its pull is weaker, so tides are a bit smaller.</dd>
+      <dt>Perigean spring tide</dt><dd>A spring tide at the same time as perigee. It's the combination that gives extra-big tides.</dd>
+      <dt>King tide</dt><dd>A popular name for the highest tides of the year. On the Oregon coast they usually come in winter and are most noticeable when a storm or strong wind adds to them.</dd>
+      <dt>Semidiurnal</dt><dd>A tide pattern with two highs and two lows each day. The Pacific coast is "mixed", which means the two highs (and the two lows) in a day are usually different heights.</dd>
+      <dt>Tidal range</dt><dd>How far the water moves between a high tide and the next low tide.</dd>
+      <dt>Lunar day</dt><dd>24 hours 50 minutes, the time for the moon to come back to the same spot in the sky. It's why tide times shift about 50 minutes later each day.</dd>
+      <dt>MLLW</dt><dd>Mean Lower Low Water, the zero line for tide heights on NOAA charts. It's the average of the lowest low tide of each day.</dd>
+    </dl>
+  </details>
+
   <h2>Snow line: Mt. Hood</h2>
   <p class="note" id="snownote" aria-live="polite">Loading</p>
   <div class="cap" id="cap_snow"></div>
@@ -939,6 +977,71 @@ function showSnow(){
 }
 $("snowtoggle").addEventListener("click",function(){snowFull=!snowFull;if(window.snowFz)drawSnow(window.snowFz,window.snowT0)});
 showSnow(); setInterval(showSnow,600000);
+
+// ---- Tides and the moon: spring/neap and perigee/apogee ----
+var DT=[[0,0,1,0,-20905.355,0],[2,0,-1,0,-3699.111,0],[2,0,0,0,-2955.968,0],[0,0,2,0,-569.925,0],[0,1,0,0,48.888,1],[0,0,0,2,-3.149,0],[2,0,-2,0,246.158,0],[2,-1,-1,0,-152.138,1],[2,0,1,0,-170.733,0],[2,-1,0,0,-204.586,1],[0,1,-1,0,-129.620,1],[1,0,0,0,108.743,0],[0,1,1,0,104.755,1],[4,0,-1,0,-34.782,0],[0,0,3,0,-23.210,0],[4,0,-2,0,-21.636,0],[2,1,-1,0,24.208,1],[2,1,0,0,30.824,1]];
+function moonDist(ms){ // kilometers, short series (good to about 100 km)
+  var T=(jd(ms)-2451545)/36525, D=mrad(297.8501921+445267.1114034*T), M=mrad(357.5291092+35999.0502909*T), Mp=mrad(134.9633964+477198.8675055*T), F=mrad(93.2720950+483202.0175233*T);
+  var E=1-0.002516*T-0.0000074*T*T, r=385000.56, i, t;
+  for(i=0;i<DT.length;i++){t=DT[i]; r+=t[4]*(t[5]?Math.pow(E,Math.abs(t[1])):1)*Math.cos(t[0]*D+t[1]*M+t[2]*Mp+t[3]*F)}
+  return r;
+}
+function tideStrength(ms){return Math.cos(2*mrad(elong(ms-129600000)))} // about 1.5 days after the moon phase
+function scanExtreme(fn,from,spanMs,step,wantMax){
+  var prev=fn(from), cur=fn(from+step), t=from+step, n=Math.floor(spanMs/step), nxt, k;
+  for(k=0;k<n;k++){
+    nxt=fn(t+step);
+    if(wantMax?(cur>=prev&&cur>nxt):(cur<=prev&&cur<nxt)){
+      var best=t, bv=cur, fine=step/30, x;
+      for(x=t-step;x<=t+step;x+=fine){var v=fn(x); if(wantMax?v>bv:v<bv){bv=v;best=x}}
+      return {t:best,v:bv};
+    }
+    prev=cur; cur=nxt; t+=step;
+  }
+  return null;
+}
+function dayLbl(ms){return new Date(ms).toLocaleDateString("en-US",{timeZone:TZ,weekday:"short",month:"short",day:"numeric"})}
+function showMoonTides(){
+  try{
+    var now=Date.now(), r=tideStrength(now), grow=tideStrength(now+21600000)>r;
+    var big,sub;
+    if(r>=0.6){big="Spring tides";sub="Big tides right now: the highest highs and the lowest lows."}
+    else if(r<=-0.6){big="Neap tides";sub="Small tides right now: highs aren't as high and lows aren't as low."}
+    else if(grow){big="Tides are growing";sub="Heading toward spring tides, so the tides are getting bigger each day."}
+    else{big="Tides are shrinking";sub="Heading toward neap tides, so the tides are getting smaller each day."}
+    $("mtbig").textContent=big; $("mtsub").textContent=sub;
+    $("mtfill").style.width=Math.round((r+1)/2*100)+"%";
+    $("mtbar").setAttribute("aria-label","Tide strength meter, "+Math.round((r+1)/2*100)+" percent toward spring tides");
+    var sp=scanExtreme(tideStrength,now,16*86400000,10800000,true), ne=scanExtreme(tideStrength,now,16*86400000,10800000,false);
+    var per=scanExtreme(moonDist,now,32*86400000,10800000,false), apo=scanExtreme(moonDist,now,32*86400000,10800000,true);
+    var mi=Math.round(moonDist(now)*0.621371/1000)*1000;
+    var tl=$("mttiles"); tl.textContent="";
+    function tile(a,b,c){
+      var d=document.createElement("div"); d.className="tile";
+      var x=document.createElement("div"); x.className="note"; x.textContent=a;
+      var y=document.createElement("div"); y.className="v"; y.textContent=b;
+      var z=document.createElement("div"); z.className="note"; z.textContent=c;
+      d.appendChild(x);d.appendChild(y);d.appendChild(z);tl.appendChild(d);
+    }
+    if(sp)tile("Biggest tides (spring) peak",dayLbl(sp.t),leftLong(sp.t-now));
+    if(ne)tile("Smallest tides (neap) bottom out",dayLbl(ne.t),leftLong(ne.t-now));
+    tile("Moon distance now",commas(mi)+" mi",mi<235000?"Close to us (near perigee)":(mi>243000?"Far from us (near apogee)":"Somewhere in the middle"));
+    if(per)tile("Closest (perigee)",dayLbl(per.t),commas(Math.round(per.v*0.621371/1000)*1000)+" mi. "+leftLong(per.t-now));
+    if(apo)tile("Farthest (apogee)",dayLbl(apo.t),commas(Math.round(apo.v*0.621371/1000)*1000)+" mi. "+leftLong(apo.t-now));
+    var al="";
+    if(per){
+      var nm=nextPhase(per.t-3*86400000,0), fm=nextPhase(per.t-3*86400000,180), cand=[nm,fm].filter(function(x){return x!==null&&Math.abs(x-per.t)<2*86400000});
+      if(cand.length){var ph=(cand[0]===nm)?"new moon":"full moon"; al="Heads up: perigee falls within about 2 days of the "+ph+" ("+dayLbl(cand[0])+"). That's a perigean spring tide, so expect extra-big tides around "+dayLbl(per.t)+"."}
+    }
+    $("mtalert").textContent=al;
+    $("mtnote").className="note";
+    $("mtnote").textContent="Worked out on this page from the moon's position, so it needs no internet. Spring and neap are timed about 1.5 days after the moon phase, since the ocean takes time to respond. Dates can be off by about a day.";
+  }catch(e){
+    $("mtnote").className="note err";
+    $("mtnote").textContent="Couldn't work out the moon and tide strength. "+errText(e);
+  }
+}
+showMoonTides(); setInterval(showMoonTides,600000);
 
 // ---- Tide clock (NOAA CO-OPS predictions, Seaside station, nearest to Cannon Beach) ----
 var TIDE_STATIONS=[["9438772","Seaside (12th Avenue bridge, Necanicum River)","about 8 miles north of Cannon Beach"],["9438478","Seaside (12th Avenue bridge, Necanicum River)","about 8 miles north of Cannon Beach"],["9437540","Garibaldi (Tillamook Bay)","about 25 miles south of Cannon Beach, so times can differ more"]], tideSt=0, tideData=null, tideFetched=0;
