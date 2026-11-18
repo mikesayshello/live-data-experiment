@@ -298,7 +298,7 @@ h1{animation:none}
   <div class="grid3" id="bartiles"></div>
   <div class="chart" id="barchart"></div>
 
-  <h2>Rain in the next 2 hours</h2>
+  <h2>Rain in the next 8 hours</h2>
   <p class="note" id="ncnote" aria-live="polite">Loading</p>
   <div class="cap" id="cap_nc"></div>
   <section class="card">
@@ -550,7 +550,7 @@ function drawRain(cum){
   var bw=pw/cum.length;
   cum.forEach(function(v,i){
     var h=top>0?ph*v/top:0, x=L+i*bw+bw*0.15;
-    var r=el("rect",{x:x,y:T+ph-h,width:bw*0.7,height:Math.max(h,v>0?1:0),"class":"bar"});
+    var r=el("rect",{x:x,y:T+ph-h,width:bw*0.72,height:Math.max(h,v>0?1:0),"class":"bar"});
     r.appendChild(el("title",{},"Last "+(i+1)+(i===0?" hour":" hours")+((i+1)>48?" ("+((i+1)/24).toFixed(1)+" days)":"")+": "+inch(v)));
     svg.appendChild(r);
     var N=i+1; if(N===1||(N<=48&&N%12===0)||(N>48&&N%24===0))svg.appendChild(el("text",{x:x+bw*0.35,y:H-24,"text-anchor":N===cum.length?"end":"middle","class":"ax"},N<=48?N+"h":(N/24)+" days"));
@@ -740,13 +740,13 @@ showRepos(); setInterval(showRepos,600000);
 var PHASECAP={"New Moon":"Invisible. Like my motivation on Mondays.","Waxing Crescent":"A tiny smile in the sky.","First Quarter":"Half a moon. Half the effort.","Waxing Gibbous":"Almost full. Fashionably late as always.","Full Moon":"Howl if you want to. No judgment.","Waning Gibbous":"Past its prime, still looking good.","Last Quarter":"Half a moon, half done, full of attitude.","Waning Crescent":"Running on fumes, like the rest of us."};
 function pick(a,seed){return a[seed%a.length]}
 
-// ---- Rain in the next 2 hours (Open-Meteo 15-minute forecast) ----
+// ---- Rain in the next 8 hours (Open-Meteo 15-minute forecast) ----
 var RAINTHR=0.004; // inches per 15 minutes (about 0.1 mm)
 function rainWord(v){return v<RAINTHR?"dry":(v<0.02?"light rain":(v<0.06?"steady rain":"heavy rain"))}
 function drawNowcast(slots){
   var W=720,H=230,L=56,R=14,T=14,B=48,i, mx=0;
   slots.forEach(function(q){mx=Math.max(mx,q.v)}); mx=Math.max(0.04,Math.ceil(mx/0.04)*0.04);
-  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"Bar chart of forecast rain in each 15 minutes for the next 2 hours in Portland"});
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"Bar chart of forecast rain in each 15 minutes for the next 8 hours in Portland"});
   var pw=W-L-R, ph=H-T-B;
   for(i=0;i<=4;i++){
     var y=T+ph-ph*i/4;
@@ -759,37 +759,44 @@ function drawNowcast(slots){
     var r=el("rect",{x:x,y:T+ph-h,width:bw*0.7,height:Math.max(h,q.v>=RAINTHR?2:0),"class":"bar"});
     r.appendChild(el("title",{},(k===0?"Right now":fmt(q.t))+": "+q.v.toFixed(3)+" in in this 15 minutes ("+rainWord(q.v)+")"));
     svg.appendChild(r);
-    if(k%2===0)svg.appendChild(el("text",{x:L+bw*k+bw/2,y:H-26,"text-anchor":"middle","class":"ax"},k===0?"now":fmt(q.t).replace(" ","")));
+    if(k%4===0)svg.appendChild(el("text",{x:L+bw*k+bw/2,y:H-26,"text-anchor":"middle","class":"ax"},k===0?"now":fmt(q.t).replace(" ","")));
   });
   svg.appendChild(el("text",{x:L+pw/2,y:H-4,"text-anchor":"middle","class":"ax"},"Forecast rain in each 15 minutes, inches"));
   var c=$("ncchart"); c.textContent=""; c.appendChild(svg);
 }
 function showNowcast(){
-  omFetch("https://api.open-meteo.com/v1/forecast?latitude=45.52&longitude=-122.68&minutely_15=precipitation&forecast_minutely_15=12&past_minutely_15=2&precipitation_unit=inch&timezone=America%2FLos_Angeles&timeformat=unixtime","minutely_15")
+  omFetch("https://api.open-meteo.com/v1/forecast?latitude=45.52&longitude=-122.68&minutely_15=precipitation&forecast_minutely_15=36&past_minutely_15=2&precipitation_unit=inch&timezone=America%2FLos_Angeles&timeformat=unixtime","minutely_15")
   .then(function(d){
     var t=d.minutely_15.time, p=d.minutely_15.precipitation, nowS=Date.now()/1000, now=Date.now(), slots=[], i;
     for(i=0;i<t.length;i++){ if(t[i]+900>nowS && typeof p[i]==="number") slots.push({t:t[i]*1000,v:p[i]}); }
-    slots=slots.slice(0,8);
-    if(slots.length<8)throw new Error("Open-Meteo only sent "+slots.length+" of the 8 fifteen-minute slots needed");
+    slots=slots.slice(0,32);
+    if(slots.length<32)throw new Error("Open-Meteo only sent "+slots.length+" of the 32 fifteen-minute slots needed");
     var total=0,mx=0; slots.forEach(function(q){total+=q.v;mx=Math.max(mx,q.v)});
-    var big,sub,j;
+    var big,sub,j,k2,N=slots.length;
+    function nextRain(from){for(var q=from;q<N;q++){if(slots[q].v>=RAINTHR)return q}return -1}
+    function nextDry(from){for(var q=from;q<N;q++){if(slots[q].v<RAINTHR)return q}return -1}
     if(slots[0].v>=RAINTHR){
-      for(j=1;j<slots.length;j++){if(slots[j].v<RAINTHR)break}
-      if(j<slots.length){var m=Math.max(1,Math.round((slots[j].t-now)/60000));big="Raining now";sub="Looks like it eases off in about "+left(m*60000)+".";window.ncKind="stops"}
-      else{big="Raining now";sub="And it keeps going for the next 2 hours.";window.ncKind="keeps"}
+      j=nextDry(1);
+      if(j>=0){
+        var m=Math.max(1,Math.round((slots[j].t-now)/60000));big="Raining now";sub="Looks like it eases off in about "+left(m*60000)+".";window.ncKind="stops";
+        k2=nextRain(j); if(k2>=0)sub+=" Rain returns around "+fmt(slots[k2].t)+".";
+      }else{big="Raining now";sub="And it keeps going for the next 8 hours.";window.ncKind="keeps"}
     }else{
-      for(j=1;j<slots.length;j++){if(slots[j].v>=RAINTHR)break}
-      if(j<slots.length){var m2=Math.max(1,Math.round((slots[j].t-now)/60000));big="Rain in about "+left(m2*60000);sub="Expect "+rainWord(slots[j].v)+" to start around "+fmt(slots[j].t)+".";window.ncKind="soon"}
-      else{big="Dry for 2 hours";sub="No rain expected through "+fmt(slots[7].t+900000)+".";window.ncKind="dry"}
+      j=nextRain(1);
+      if(j>=0){
+        var m2=Math.max(1,Math.round((slots[j].t-now)/60000));big="Rain in about "+left(m2*60000);sub="Expect "+rainWord(slots[j].v)+" to start around "+fmt(slots[j].t)+".";window.ncKind="soon";
+        k2=nextDry(j); if(k2>=0)sub+=" It looks like it lasts about "+left(Math.max(15,Math.round((slots[k2].t-slots[j].t)/60000))*60000)+".";
+        else sub+=" It keeps going through the rest of the 8 hours.";
+      }else{big="Dry for 8 hours";sub="No rain expected through "+fmt(slots[N-1].t+900000)+".";window.ncKind="dry"}
     }
-    sub+=" Total forecast for the next 2 hours: "+total.toFixed(2)+" in.";
+    sub+=" Total forecast for the next 8 hours: "+total.toFixed(2)+" in.";
     $("ncbig").textContent=big; $("ncsub").textContent=sub;
     drawNowcast(slots);
     $("ncnote").className="note";
-    $("ncnote").textContent="Forecast (modeled), not a radar or a rain gauge. Updated "+new Date().toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})+". Refreshes every 10 minutes.";
+    $("ncnote").textContent="Forecast (modeled), not a radar or a rain gauge. The first couple of hours are the most reliable, and later hours are less certain. Updated "+new Date().toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})+". Refreshes every 10 minutes.";
   }).catch(function(e){
     $("ncnote").className="note err";
-    $("ncnote").textContent="Couldn't load the 2-hour rain forecast. "+errText(e)+". (Will retry in 10 minutes.)";
+    $("ncnote").textContent="Couldn't load the 8-hour rain forecast. "+errText(e)+". (Will retry in 10 minutes.)";
   });
 }
 showNowcast(); setInterval(showNowcast,600000);
@@ -895,34 +902,37 @@ showSnow(); setInterval(showSnow,600000);
 // ---- Tide clock (NOAA CO-OPS predictions, Seaside station, nearest to Cannon Beach) ----
 var TIDE_STATION="9438478", tideData=null, tideFetched=0;
 function ymdUTC(ms){var d=new Date(ms);return d.getUTCFullYear()+("0"+(d.getUTCMonth()+1)).slice(-2)+("0"+d.getUTCDate()).slice(-2)}
-function loadTides(){
+var TIDE_DATUMS=[["MLLW","the average lowest tide of the day (MLLW)"],["CRD","the Columbia River Datum"],["MSL","mean sea level"],["STND","the station's own zero point"]], tideDatum=0;
+function loadTides(i){
+  i=i||0;
   var now=Date.now();
-  var url="https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=live_data_experiment&station="+TIDE_STATION+"&begin_date="+ymdUTC(now-86400000)+"&end_date="+ymdUTC(now+3*86400000)+"&datum=MLLW&time_zone=gmt&units=english&interval=hilo&format=json";
+  var url="https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=live_data_experiment&station="+TIDE_STATION+"&begin_date="+ymdUTC(now-86400000)+"&end_date="+ymdUTC(now+3*86400000)+"&datum="+TIDE_DATUMS[i][0]+"&time_zone=gmt&units=english&interval=hilo&format=json";
   tfetch(url,{cache:"no-store"},10000).then(function(r){
     return r.text().then(function(txt){
       var j=null; try{j=JSON.parse(txt)}catch(x){}
       if(!r.ok||(j&&j.error)){
         var why=(j&&j.error&&j.error.message)?j.error.message:(txt?txt.slice(0,150):"no details");
-        throw new Error("NOAA answered HTTP "+r.status+": "+why);
+        var er=new Error("NOAA answered HTTP "+r.status+": "+why); er.datumProblem=/datum/i.test(why); throw er;
       }
       if(!j||!j.predictions||!j.predictions.length)throw new Error("NOAA reply had no tide predictions. Reply began: "+txt.slice(0,150));
       tideData=j.predictions.map(function(q){return {t:Date.parse(q.t.replace(" ","T")+":00Z"),v:parseFloat(q.v),hi:q.type==="H"}}).filter(function(q){return !isNaN(q.t)&&!isNaN(q.v)});
-      tideFetched=Date.now();
+      tideFetched=Date.now(); tideDatum=i;
       drawTide();
     });
   },function(e){
     if(e&&(e.name==="TimeoutError"||e.name==="AbortError"))throw new Error("No answer from NOAA after 10 seconds (timed out)");
     throw new Error("Couldn't reach NOAA ("+((e&&e.message)||"network error")+"). Check your internet connection or an ad/content blocker");
   }).catch(function(e){
+    if(e&&e.datumProblem&&i+1<TIDE_DATUMS.length){loadTides(i+1);return}
     $("tidenote").className="note err";
-    $("tidenote").textContent="Couldn't load tides. "+errText(e)+". (Will retry in 30 minutes.)";
+    $("tidenote").textContent="Couldn't load tides. "+errText(e)+(e&&e.datumProblem?" (tried: "+TIDE_DATUMS.map(function(d){return d[0]}).join(", ")+")":"")+". (Will retry in 30 minutes.)";
   });
 }
 function drawTide(){
   if(!tideData)return;
   var now=Date.now(), i=-1;
   for(var k=0;k<tideData.length-1;k++){if(tideData[k].t<=now&&now<tideData[k+1].t){i=k;break}}
-  if(i<0){$("tidenote").className="note err";$("tidenote").textContent="Tide data has run out of range. Refreshing.";if(Date.now()-tideFetched>60000)loadTides();return}
+  if(i<0){$("tidenote").className="note err";$("tidenote").textContent="Tide data has run out of range. Refreshing.";if(Date.now()-tideFetched>60000)loadTides(0);return}
   var a=tideData[i], b=tideData[i+1], f=(now-a.t)/(b.t-a.t);
   var h=a.v+(b.v-a.v)*(1-Math.cos(Math.PI*f))/2;
   var falling=!b.hi;
@@ -933,7 +943,7 @@ function drawTide(){
   $("tidewater").setAttribute("y",y.toFixed(1));
   $("tidestate").textContent=falling?"Falling":"Rising";
   window.tideWord=falling?"falling":"rising";
-  $("tideheight").textContent="About "+h.toFixed(1)+" feet above the average low-tide line.";
+  $("tideheight").textContent=tideDatum===0?"About "+h.toFixed(1)+" feet above the average low-tide line.":"About "+h.toFixed(1)+" feet, measured from "+TIDE_DATUMS[tideDatum][1]+".";
   var nh=null,nl=null;
   for(var m=i+1;m<tideData.length;m++){if(tideData[m].hi&&!nh)nh=tideData[m];if(!tideData[m].hi&&!nl)nl=tideData[m]}
   var tl=$("tidetiles"); tl.textContent="";
@@ -953,9 +963,9 @@ function drawTide(){
     li.appendChild(bb);li.appendChild(sp);ul.appendChild(li);
   });
   $("tidenote").className="note";
-  $("tidenote").textContent="Predictions for Seaside (12th Avenue bridge, Necanicum River), the nearest NOAA station to Cannon Beach, about 8 miles north. Cannon Beach times can differ by some minutes. Heights are in feet above the average lowest tide of the day (MLLW). Updated "+new Date(tideFetched).toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})+".";
+  $("tidenote").textContent="Predictions for Seaside (12th Avenue bridge, Necanicum River), the nearest NOAA station to Cannon Beach, about 8 miles north. Cannon Beach times can differ by some minutes. Heights are in feet, measured from "+TIDE_DATUMS[tideDatum][1]+". Updated "+new Date(tideFetched).toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})+".";
 }
-loadTides(); setInterval(loadTides,1800000); setInterval(drawTide,15000);
+loadTides(0); setInterval(function(){loadTides(0)},1800000); setInterval(drawTide,15000);
 function captions(){
   var now=new Date(), h=Number(now.toLocaleString("en-US",{timeZone:TZ,hour:"numeric",hour12:false}))%24, k=Math.floor(Date.now()/60000);
   var c;
