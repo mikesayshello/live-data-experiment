@@ -113,6 +113,8 @@ section.card:nth-of-type(odd){background:#fffdf5}
 .storylegend{font-family:system-ui,sans-serif;font-size:14px;color:var(--muted);margin:0 0 1.4em!important}
 .story .chap{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:22px;line-height:1.2;margin:1.8em 0 .6em}
 .story .chap span{display:block;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#0a7ea4;margin-bottom:4px}
+.story .screen{font-family:ui-monospace,Consolas,monospace;font-size:15px;background:rgba(245,183,0,.14);border-left:4px solid #F5B700;margin:1em 0;padding:8px 12px;border-radius:4px}
+.story .tbl{overflow-x:auto;margin:1em 0}.story table{border-collapse:collapse;font-family:system-ui,sans-serif;font-size:14px}.story th,.story td{border:1px solid rgba(128,128,128,.4);padding:6px 10px;text-align:left}
 .storytitle{font-size:26px;line-height:1.2;margin:0 0 4px;letter-spacing:.02em}
 .storysub{font-style:italic;color:var(--muted)!important;margin:0 0 1.4em!important}
 .scene{text-align:center;letter-spacing:.6em;color:var(--muted);margin:1.2em 0}
@@ -312,6 +314,8 @@ h1{animation:none}
   <div class="btnrow" id="btnrow">
     <button type="button" class="toggle" id="glossbtn" aria-expanded="false" aria-controls="glosspanel">What do these words mean?</button>
     <button type="button" class="toggle" id="storybtn" aria-expanded="false" aria-controls="storypanel">Read the story</button>
+    <button type="button" class="toggle" id="sixbtn" aria-expanded="false" aria-controls="sixpanel">Six Sigma story</button>
+    <button type="button" class="toggle" id="ewmbtn" aria-expanded="false" aria-controls="ewmpanel">SAP EWM story</button>
   </div>
   <div class="gloss" id="glosspanel" hidden>
     <dl>
@@ -379,6 +383,306 @@ h1{animation:none}
       <p>"What do I owe you?"</p>
       <p>"Come back tomorrow. Low tide will be fifty minutes later than today's."</p>
       <p>You grin. You already knew that.</p>
+      <p class="theend">The End</p>
+  </article>
+  <article class="gloss story" id="sixpanel" hidden>
+      <h3 class="storytitle">The Yellow Belt Story</h3>
+      <p class="storysub">A Six Sigma Yellow Belt story</p>
+      <p class="storylegend">A story that covers the key concepts of Six Sigma Yellow Belt, built from the ASQ, IASSC and MSI Yellow Belt bodies of knowledge. Every <b class="card">bold word</b> is a study term, and every Carr Industries or Corey Financial Company memory is a "translator" hook you can attach to it.</p>
+      <h4 class="chap"><span>Chapter 1</span>The two trucks</h4>
+      <p>Your manager at Carr Industries had big news: the hub is launching a continuous improvement program built on Lean Six Sigma. To get ready, you're spending three months cross-training at T-Brothers, the partner company that has run one for years. Before your first day, your manager hands you a list of job titles to search in the T-Brothers staff directory, so you'll know who to ask: continuous improvement coordinator, Green Belt, Black Belt, quality analyst, operations excellence lead, and process owner.</p>
+      <p>T-Brothers puts you on the floor of Dock 4 as an inventory associate, and assigns you to a small project as a Yellow Belt trainee. You'll learn the method by doing the work.</p>
+      <p>On your first morning, Donald, the warehouse lead, meets you at the dock door with a clipboard and a stopwatch. "Two trucks," he says. "Truck A and Truck B. Both have an average arrival time of 4:45 p.m. Which one would you rather plan around?"</p>
+      <p>"Same average, so it doesn't matter?"</p>
+      <p>"Look closer." He shows you the log. Truck A arrives between 4:40 and 4:50, every day. Truck B has arrived as early as 3:30 and as late as 6:15. "Same average. Very different life. That spread is <b class="card">variation</b>, and it's the real enemy. Customers don't feel the average. They feel the day the truck showed up at 6:15."</p>
+      <p>That's the whole idea of <b class="card">Six Sigma</b>: its purpose is to reduce variation so a process delivers the same good result every time. At Carr Industries, you've felt it. Some days the store lanes are staged by noon, and some days they aren't, and the average tells nobody anything.</p>
+      <p>Donald points to a number on the wall: 99%. "Our order accuracy used to look great at 99 percent. We ship about 2,000 orders a day. So how many wrong orders is 99 percent?"</p>
+      <p>You do the math. "Twenty. Every day."</p>
+      <p>"That's the <b class="card">99 percent problem</b>. Sounds great, but it's twenty angry stores." He taps a second number. "A process at <b class="card">six sigma</b> makes only 3.4 defects per million opportunities. That's the target. The <b class="card">sigma level</b> is the scorecard for how many defects a process makes. Higher sigma, fewer defects, less variation."</p>
+      <p>You remember the hook: sigma is just the measure of spread. The more sigmas of room you have before you hit a defect, the better the process.</p>
+      <p>He writes one more line on the clipboard: Y = f(X). "The result you care about, the Y, depends on the inputs, the X's. Late trucks and wrong orders are Ys. You can't fix a Y by yelling at it. You find the X's that drive it and control those." At Corey Financial Company, that's how a QA engineer thinks about a defect: you don't fix the symptom on the screen, you find the code that caused it.</p>
+      <p>"And what does poor quality cost?"</p>
+      <p>"More than you'd think." He draws an iceberg. The small tip above the water is what shows up in the books: scrap and returns. Below it is the <b class="card">cost of poor quality</b>, or COPQ: rework, re-checking, expediting, lost customers, and the hours people spend fixing things instead of doing things. At the hub, that's every re-pick, every redelivered part, and every phone call about a missing order.</p>
+      <h4 class="chap"><span>Chapter 2</span>Three names, one toolbox</h4>
+      <p>Donald introduces you to Nadia, the project leader. She holds a mug that says CONTROL YOUR PROCESS.</p>
+      <p>"Three names you'll hear all day," she says, counting on her fingers. "<b class="card">Lean</b>: remove waste and speed things up. <b class="card">Six Sigma</b>: reduce variation and defects. <b class="card">Kaizen</b>: small, continuous improvement by everyone, every day. Put them together and you get <b class="card">Lean Six Sigma</b>. Lean makes the process fast, Six Sigma makes it consistent, and Kaizen keeps the habit alive."</p>
+      <p>The history is short. Lean grew out of Toyota's production system, built around eliminating waste. Six Sigma came out of Motorola in the 1980s, then spread through companies like General Electric. And long before both, quality pioneers like W. Edwards Deming popularized the idea of constant improvement through a repeating loop: <b class="card">PDCA</b>, Plan, Do, Check, Act. You'll use it in a few days.</p>
+      <p>Nadia draws the main method on a whiteboard: <b class="card">DMAIC</b>.</p>
+      <p>Define. Measure. Analyze. Improve. Control.</p>
+      <p>"It's for fixing an existing process that doesn't meet the customer's needs. If you're designing a brand-new process from scratch, there's a sibling called <b class="card">DMADV</b>: Define, Measure, Analyze, Design, Verify. We're fixing Dock 4, so it's DMAIC. Five phases, in order. Skip one and you're guessing."</p>
+      <p>You think of the way Corey Financial Company ran a release: requirements, build, test, deploy, monitor. DMAIC has the same discipline, applied to a process instead of code.</p>
+      <p>She adds a final reminder: DMAIC is data-driven. Opinions are welcome, but the data decides.</p>
+      <h4 class="chap"><span>Chapter 3</span>The belts</h4>
+      <p>Nadia introduces the cast.</p>
+      <p>"You're a <b class="card">Yellow Belt</b>. That means you understand the basics, support projects, collect data, and help the team with the tools. It's the entry level. I'm a <b class="card">Green Belt</b>. I lead projects like this one part-time, alongside my regular job." She points toward the office upstairs. "Walt is a <b class="card">Black Belt</b>. He leads big, complex projects, usually full-time, and coaches Green Belts like me. And above him is the <b class="card">Master Black Belt</b>: the person who trains the Black Belts and shapes the improvement strategy for the whole company."</p>
+      <p>She adds the other roles that aren't belts. The <b class="card">champion</b> is a senior leader who promotes the program and removes barriers. The <b class="card">sponsor</b> owns the project at the leadership level: it's her budget and her results. Ms. Okafor, the plant manager, is ours. The <b class="card">process owner</b> runs the process day to day and is responsible for keeping the gains. "That's Donald. He owns Dock 4."</p>
+      <p>"So if Donald's the process owner..." you say.</p>
+      <p>"Then nothing we change sticks unless he agrees to it. Never leave the process owner out."</p>
+      <p>The team meets Monday afternoon. It's cross-functional: someone from receiving, picking, shipping, IT, and customer service. A <b class="card">cross-functional team</b> brings people from different departments, because a problem that crosses departments can't be fixed by just one.</p>
+      <p>Nadia warns you about the way teams grow. Teams move through stages: <b class="card">forming</b> (polite and unsure), <b class="card">storming</b> (disagreement and friction), <b class="card">norming</b> (agreeing on how to work together), <b class="card">performing</b> (producing results), and <b class="card">adjourning</b> (wrapping up). "We'll storm a little around week three. That's normal. It means people care."</p>
+      <h4 class="chap"><span>Chapter 4</span>Define</h4>
+      <p>On Tuesday, Nadia gets to the first phase. "In Define, we answer three questions. What's the problem? Who cares? And what does success look like?"</p>
+      <p>She starts with the customers. She doesn't guess: she phones three of the twelve stores. Gathering what customers actually say they need is called the <b class="card">Voice of the Customer</b>, or <b class="card">VOC</b>. Customers say:</p>
+      <p>"I need the right part."</p>
+      <p>"I need it before the shop opens."</p>
+      <p>"I need the paperwork to match the box."</p>
+      <p>"They didn't say 'improve your wave release logic'," Nadia says. "Now we translate. We take each need and turn it into something measurable." She builds a <b class="card">CTQ tree</b>, a diagram that breaks a broad need into specific, measurable requirements. A <b class="card">CTQ</b>, Critical to Quality, is a measurable requirement that matters to the customer. Right part becomes order accuracy, at least 99.5 percent correct. Before the shop opens becomes on-time delivery, with the truck loaded by 5 p.m. and arriving before 7 a.m.</p>
+      <p>You remember the hook: VOC is what customers say, CTQ is what you can measure.</p>
+      <p>Then she writes the <b class="card">project charter</b>, a one-page agreement for the project. It holds the <b class="card">problem statement</b> (about 4 percent of Dock 4 orders ship wrong), the goal (cut that in half in 90 days, a goal that is specific, measurable, and has a deadline), the <b class="card">scope</b> (Dock 4 only; the receiving dock is out), the timeline, and the team. "Scope is where projects go to die," she says. "The charter keeps us from fixing the whole building."</p>
+      <p>The charter lists <b class="card">stakeholders</b>, everyone affected by the project or able to influence it: the pickers, the stores, Ms. Okafor, Donald, and the IT help desk. At Corey Financial Company, you called this identifying who needs to sign off before a release.</p>
+      <p>At the end of each phase, the team holds a <b class="card">tollgate review</b>, a checkpoint where the sponsor confirms the phase is complete before the team moves on. "It's a gate. You don't proceed until it opens."</p>
+      <p>Last, Nadia sketches a <b class="card">SIPOC</b>, a high-level view of a process: Suppliers, Inputs, Process, Outputs, Customers. The suppliers are vendors and the buyer. The inputs are inventory and orders. The process is receive, put away, pick, pack, ship, in about five big steps. The outputs are loaded cartons and paperwork. The customers are the twelve stores.</p>
+      <p>"The 30,000-foot view," she says. "Next week we go to ground level."</p>
+      <h4 class="chap"><span>Chapter 5</span>Measure</h4>
+      <p>Wednesday, the clipboard comes out.</p>
+      <p>Nadia starts with a <b class="card">process map</b>, a step-by-step picture of how work really flows. You walk Dock 4 with a pencil and draw every step, in order, with Pam, a picker, narrating. When people from different groups handle the work, you draw it as a <b class="card">swimlane</b> map, with one lane per person or department, so the handoffs show up. You count eleven steps. Everyone thought it was four.</p>
+      <p>"There's a bigger version called a <b class="card">value stream map</b>," Nadia says. "It tracks both the work steps and the waiting time between them, and it shows where the order sits idle." You time it. The <b class="card">cycle time</b>, how long one step takes, to pick an order averages 11 minutes. The <b class="card">lead time</b>, the total time from order entered to truck loaded, is much longer, mostly waiting.</p>
+      <p>"And <b class="card">takt time</b>," Donald adds, "is the pace the customer demands. Four hundred twenty working minutes divided by 210 orders is a two-minute takt. With six pickers at eleven minutes each, we barely keep up. Any slip and we miss the truck."</p>
+      <p>Then comes the thing you're best at. "Data," Nadia says, and hands you the plan. You know it from QA: a <b class="card">data collection plan</b> says what to measure, how, who collects it, and when. You start by writing an <b class="card">operational definition</b>, an exact description of what counts as an error, so everyone counts the same way. "A wrong shipment is any carton with the wrong item, wrong quantity, wrong label, or wrong address." Without it, Pam's "wrong" and Tank's "wrong" won't match.</p>
+      <p>There are two kinds of data. <b class="card">Continuous data</b> (variable data) is measured on a scale: pick time in minutes, weight. <b class="card">Discrete data</b> (attribute data) is counted: errors, yes-or-no, pass-or-fail. At Corey Financial Company, a defect count was discrete and a response time was continuous.</p>
+      <p>You build a <b class="card">check sheet</b>, a simple form for tallying counts. At the packing table, every error gets a tally mark, tagged by type, so the data is collected as events happen. You also decide on <b class="card">sampling</b>: you can't measure every order forever, so you measure a representative piece, 500 orders over two weeks, taken across all shifts.</p>
+      <p>Nadia stops you before the first tally. "Before you trust the data, test the ruler. If Pam and Tank count the same carton and get different answers, the data is junk." That's <b class="card">measurement system analysis</b>, checking that your measuring process is accurate and consistent. Two ideas matter: <b class="card">repeatability</b> (the same person gets the same result twice) and <b class="card">reproducibility</b> (different people get the same result). Her more advanced version is a Gage R&amp;R study. For now, you run a mini test: three people recheck twenty cartons. The counts match.</p>
+      <p>Two weeks later, the <b class="card">baseline</b>, the starting level of performance before any change, is in:</p>
+      <p>500 orders sampled. Twenty had an error. That's 4 percent defective, a <b class="card">yield</b> of 96 percent. You calculate <b class="card">DPMO</b>, defects per million opportunities. There are four ways an order can go wrong, so 500 orders gives 2,000 opportunities. Twenty defects out of 2,000 is 1 percent, which is 10,000 DPMO. Far from 3.4.</p>
+      <p><b class="card">First pass yield</b> is the share of orders that come out right the first time without rework: 96 percent. <b class="card">Rolled throughput yield</b> is the chance of getting through every step with no defect: pick at 98 percent, pack at 99, load at 99, so 0.98 times 0.99 times 0.99 is about 96 percent. "Each step looks fine alone," Nadia says. "But they stack."</p>
+      <p>You also work out the basic statistics. The <b class="card">mean</b> (average) pick time is 11 minutes. The <b class="card">median</b>, the middle value, is 10. The <b class="card">mode</b>, the most common, is 9. The <b class="card">range</b> is the highest minus the lowest: 25 minus 6, or 19 minutes. And the <b class="card">standard deviation</b>, the typical distance from the mean, is about 4.2 minutes. "That," Nadia says, "is your variation as a single number."</p>
+      <p>She asks what the customer-side limits are. The <b class="card">specification limits</b> are the boundaries the customer will accept: pick done within 12 minutes. <b class="card">Process capability</b>, measured with indexes like Cp and Cpk, says how well the process fits inside those limits. A Cpk around 1.33 or higher is a common target. Dock 4 isn't close.</p>
+      <h4 class="chap"><span>Chapter 6</span>Analyze</h4>
+      <p>Thursday, you stop measuring and start asking why.</p>
+      <p>The first picture is a <b class="card">Pareto chart</b>, a bar chart of error causes sorted from largest to smallest, with a line showing the running total. Nine error types, but three account for 78 percent of the mistakes: look-alike bins, rushed packing at end of shift, and mislabeled locations. "The <b class="card">Pareto principle</b>," Donald says. "Roughly eighty percent of problems come from twenty percent of the causes. Fix the vital few first."</p>
+      <p>The second is a <b class="card">histogram</b>, a bar chart showing how often values fall in each range. Your pick times show two humps instead of one: a fast group and a slow group. The slow hump is the back aisles.</p>
+      <p>The third is a <b class="card">run chart</b>, which plots data in time order, and its stricter cousin the <b class="card">control chart</b>, which adds a center line and upper and lower control limits. Dock 4's daily error rate wobbles around the line. That wobble is <b class="card">common cause variation</b>: the normal, built-in noise of the process. But one day spikes far above the upper limit. That's <b class="card">special cause variation</b>: something unusual with an identifiable reason. The forklift broke that day.</p>
+      <p>"Different problems need different fixes," Nadia says. "Common cause means the process itself must change. Special cause means find what was different that day." A point outside the control limits is one signal. Another is a run of seven or eight points in a row on one side of the center line.</p>
+      <p>A <b class="card">scatter plot</b> shows two variables against each other. You plot error rate against hours into the shift, and the dots climb. That's <b class="card">correlation</b>, two things moving together. But Nadia warns: "Correlation isn't causation. Maybe fatigue causes errors, or maybe end-of-shift rushes do. We still have to test."</p>
+      <p>Now for causes. Nadia gathers the team for a <b class="card">cause-and-effect diagram</b>, also called a <b class="card">fishbone</b> or Ishikawa diagram. The head of the fish is the problem, wrong shipments. The bones are categories, usually the 6 M's: people, machines, methods, materials, measurement, and environment. The room fills with sticky notes. Under materials: look-alike gray bins. Under methods: no written pick rules. Under environment: dim lighting in aisle D.</p>
+      <p>Then she picks the most likely cause and asks <b class="card">5 Whys</b>, asking "why" repeatedly until you reach a cause you can act on.</p>
+      <p>Why was the wrong item picked? The bins look alike.</p>
+      <p>Why do they look alike? Both are small gray boxes.</p>
+      <p>Why are they side by side? Items were shelved wherever there was room.</p>
+      <p>Why wherever there was room? There are no shelving rules.</p>
+      <p>Why no rules? Nobody ever wrote them down.</p>
+      <p>"That's the <b class="card">root cause</b>," Nadia says. "A <b class="card">symptom</b> is what you see. The root cause is what produces it. Tank didn't cause this. The process did." Tank puts his burrito down. "Thank you."</p>
+      <p>You remember the hook: fishbone finds the possible causes, 5 Whys drills down on one, and Pareto tells you which problem to drill into first. At Corey Financial Company, that was root cause analysis on a defect.</p>
+      <p>Finally, Nadia asks you to walk the floor and sort every step by value. A <b class="card">value-added</b> step is one the customer would pay for and that changes the product. A <b class="card">non-value-added</b> step is waste. A <b class="card">business-necessary</b> step doesn't add value but is required, like compliance paperwork. Of Dock 4's eleven steps, only three are value-added.</p>
+      <p>The waste has a name, or eight of them, called the <b class="card">8 wastes</b>, remembered as <b class="card">DOWNTIME</b>:</p>
+      <p><b class="card">D</b>efects: the wrong cartons.</p>
+      <p><b class="card">O</b>verproduction: packing orders nobody needs yet.</p>
+      <p><b class="card">W</b>aiting: trucks idling while labels print.</p>
+      <p><b class="card">N</b>on-utilized talent: Pam can run the whole dock and mostly tapes boxes.</p>
+      <p><b class="card">T</b>ransportation: pallets moved four times to go ten feet.</p>
+      <p><b class="card">I</b>nventory: dusty slow-movers eating up space.</p>
+      <p><b class="card">M</b>otion: walking to a printer in the far corner.</p>
+      <p><b class="card">E</b>xtra processing: three people re-checking the same label.</p>
+      <p>At Carr Industries, you could name an example of every letter before lunch.</p>
+      <h4 class="chap"><span>Chapter 7</span>Improve</h4>
+      <p>Friday morning, Nadia runs a <b class="card">brainstorming</b> session with one rule: no judging. Fifteen ideas hit the whiteboard. Then she ranks them on an <b class="card">impact-effort matrix</b>, a grid that plots each idea by how much it helps and how hard it is. High impact, low effort lands in the "do first" box: relabel the bins, move the look-alikes apart, and add scanner prompts.</p>
+      <p>First comes <b class="card">5S</b>, a method for an organized, clean workplace:</p>
+      <p><b class="card">Sort</b>: remove what isn't needed. Three dumpsters' worth.</p>
+      <p><b class="card">Set in order</b>: a place for everything, with look-alike parts moved far apart.</p>
+      <p><b class="card">Shine</b>: clean and inspect.</p>
+      <p><b class="card">Standardize</b>: the same rules everywhere.</p>
+      <p><b class="card">Sustain</b>: make it a habit.</p>
+      <p>You see the hook right away. At the hub, you straighten things up. Here, you make that a system.</p>
+      <p>Next is <b class="card">visual management</b>, using signs, colors, and displays so anyone can see what's normal and what's wrong at a glance. Color-coded bin labels, floor tape for lanes, and a shadow board for label guns. At Corey Financial Company, a dashboard of the ServiceNow queue, with overdue tickets in red, was the same trick.</p>
+      <p>Then <b class="card">standard work</b>: the documented best-known way to do a task. Nadia sits with Pam and writes the pick-and-pack sequence from her technique, one page, photos included. "The best way becomes the standard way."</p>
+      <p>For replenishment, they add a <b class="card">kanban</b>: a card or signal that triggers a refill only when stock is used. It's a <b class="card">pull system</b>, where work is triggered by demand instead of pushed out in advance. When the card turns up, you restock the shelf. Nothing is made or moved before it's needed.</p>
+      <p>For the look-alike problem, they use <b class="card">mistake-proofing</b>, or <b class="card">poka-yoke</b>: designing the process so an error is impossible or immediately obvious. A scanner that beeps red when you grab the wrong item. "It beats telling people to be careful," Nadia says. At Corey Financial Company, an input field that rejects a bad value is the same idea.</p>
+      <p>Before they commit, she runs an <b class="card">FMEA</b>, a Failure Modes and Effects Analysis: a structured way to ask what could go wrong with the fix. For each failure, the team scores <b class="card">severity</b> (how bad), <b class="card">occurrence</b> (how often), and <b class="card">detection</b> (how hard to catch), and multiplies them into a <b class="card">risk priority number</b>. The highest numbers get attention first. The scanner beep might be ignored if it sounds too much like other alerts, so they change the tone.</p>
+      <p>Now the <b class="card">pilot</b>, a small-scale test before rolling out to everyone. They run it on aisle 3 and follow <b class="card">PDCA</b>: Plan the change, Do it on one aisle, Check the results, Act on what you learned. You recognize it from QA: it's testing in a safe environment before production, and you check that nothing else broke.</p>
+      <p>After a week, aisle 3's error rate drops from 4 percent to under 1. But was it real, or luck? Nadia runs a <b class="card">hypothesis test</b>, a statistical check on whether a difference is real or just chance. The result is a <b class="card">p-value</b>, the probability of seeing a difference this big by luck alone. A p-value below 0.05 is the usual line for "probably real." Hers comes back at 0.01. "I'll leave the math to the Green Belts," she says. "You just need to know what it means."</p>
+      <p>The team runs a <b class="card">kaizen event</b>, a short, focused improvement burst, sometimes called a kaizen blitz, usually three to five days. By Wednesday, every aisle on Dock 4 has the new labels, the new rules, and the new scanner prompts.</p>
+      <h4 class="chap"><span>Chapter 8</span>Control</h4>
+      <p>On Thursday, Donald says what everyone is worried about. "Six months from now, it'll all drift back."</p>
+      <p>"That's the <b class="card">Control</b> phase," Nadia says. "The project isn't done when the numbers improve. It's done when they stay improved."</p>
+      <p>She builds a <b class="card">control plan</b>, a document describing how the process will be kept stable: what to measure (daily error rate and pick time), how, who checks (Donald), how often (every shift), what the limits are, and what to do if something goes wrong. That last piece is the <b class="card">reaction plan</b>: if the error rate crosses the upper control limit, stop, check the scanner, check the bins, and call Nadia. At Corey Financial Company, you'd call this a change approval board's rollback plan, plus monitoring afterward.</p>
+      <p>The team puts a live control chart by the time clock, so everyone can see the line stay inside the limits. A <b class="card">statistical process control</b> chart, SPC for short, keeps working after the project ends. They also write the standard work into onboarding, schedule a weekly five-minute 5S walk to <b class="card">sustain</b> the gains, and train every picker on the new process.</p>
+      <p>Then comes the <b class="card">handoff</b>: the process now officially belongs to Donald, the process owner. Nadia steps back.</p>
+      <p>The final numbers come in after 90 days. Errors are down to 0.8 percent. Average pick time is 7 minutes, with a standard deviation of 1.5. That's a much tighter spread, so the process is more capable, and the east-route truck leaves on time. Ms. Okafor adds up the savings: fewer re-picks, fewer returns, fewer expedited deliveries. Quantifying the <b class="card">financial benefit</b> is how a project earns its sponsor's trust.</p>
+      <p>At the final tollgate, the team captures <b class="card">lessons learned</b>, the good, the bad, and what to do differently next time. Then the project is formally closed.</p>
+      <p>"What's next?" Donald asks.</p>
+      <p>"Dock 5," Nadia says.</p>
+      <h4 class="chap"><span>Chapter 9</span>The panel</h4>
+      <p>When your three months wrap up, you return to Carr Industries. The hub's first improvement project is about to launch, and your operations manager runs a panel to choose the team's Yellow Belt. Donald joins to advise.</p>
+      <p>The manager starts. "What do you know about Six Sigma?"</p>
+      <p>You use the shape you practiced for panel: what do you know about Six Sigma. What it is in one sentence, two or three key ideas, then how it connects to you. "It's a data-driven method for reducing variation and defects in a process. We follow DMAIC: define the problem and the customer's needs, measure the baseline, analyze root causes, improve, and control so it sticks. At T-Brothers, I helped cut wrong shipments from 4 percent to under 1."</p>
+      <p>"What does a Yellow Belt do on a project?"</p>
+      <p>For panel: what does a Yellow Belt do, you answer in three parts. "Collect good data, support the team with the basic tools, and keep the process owner involved."</p>
+      <p>Then Donald asks, "Tell me about a time you used data to solve a problem."</p>
+      <p>It's a behavioral question, asking for a real past example. So you use the STAR method: Situation, Task, Action, Result. Your panel: data story is Dock 4. The Situation was a 4 percent wrong-shipment rate. The Task was to find the cause. The Action was building a check sheet, running a Pareto chart, and walking through 5 Whys to a root cause: no shelving rules. The Result was a drop to 0.8 percent in ninety days.</p>
+      <p>The manager leans back. "You're not a Green Belt, and you've only been on one project. Why should we pick you?"</p>
+      <p>This is panel: why pick you with one project, and you've practiced bridging: acknowledge the gap in one sentence, then move to what you bring. "That's fair, it's my first project. But I bring nineteen years of IT and QA, I've done root cause analysis and change control at Corey Financial Company, and I know this floor. I'm a quick study, and I want to keep growing toward Green Belt."</p>
+      <p>"Do you have questions for us?"</p>
+      <p>You remember the order: role questions first, growth path last. You start with panel: questions about the project: which process the team will tackle first, and who the process owner is. Next come panel: questions about data: how the baseline will be measured, and whether the team has an operational definition for a defect. You save panel: questions about growth for last: how Yellow Belts move up to Green Belt, and whether the company supports certification.</p>
+      <p>A week later, your manager tells you the role is yours.</p>
+      <h4 class="chap"><span>Chapter 10</span>One year later</h4>
+      <p>A year after that first morning on Dock 4, the hub at Carr Industries has finished its first three improvement projects. People come to you with their process questions. You've done data collection for all three, and you've facilitated 5S walks on every shift.</p>
+      <p>You've also decided to make it official. Two main certifications cover the Yellow Belt level: the ASQ Certified Six Sigma Yellow Belt, which follows the body of knowledge you've been living, and the IASSC Certified Yellow Belt. You're working through the body of knowledge, tying each topic back to something on a floor: DMAIC to Dock 4, VOC to the three phone calls, the Pareto chart to the vital few.</p>
+      <p>Your path is mapped out: Yellow Belt, then Green Belt, then leading your own project. You've finished step one, and you've got the first few steps of the second.</p>
+      <p>On a visit back to T-Brothers one evening, you walk past 2-2-202. Four oil filters sit on the shelf, in their own labeled bin, away from the look-alike gaskets. Near the time clock, the control chart is still hanging. The line wobbles a little around the center, and it stays inside the limits.</p>
+      <p>The process is stable, and the point is that it stays that way.</p>
+      <p class="theend">The End</p>
+  </article>
+  <article class="gloss story" id="ewmpanel" hidden>
+      <h3 class="storytitle">The Whole Story</h3>
+      <p class="storysub">A SAP EWM warehouse story</p>
+      <p class="storylegend">A story that uses all 202 of your Quizlet cards. Every bold word is a card, and every Carr Industries or Corey Financial Company memory is one of your translator cards.</p>
+      <h4 class="chap"><span>Chapter 1</span>The map</h4>
+      <p>Your manager at Carr Industries had big news: the hub is moving to SAP EWM in S/4HANA. To get ready, you're spending three months cross-training at T-Brothers, a partner company that already runs it. Before your first day, your manager hands you a list of job titles to search in the T-Brothers staff directory, so you'll know who to ask: inventory control analyst, inventory specialist, warehouse systems analyst, logistics analyst, SAP key user, and UAT tester.</p>
+      <p>T-Brothers sets you up on the floor as an inventory associate, so you learn the system by doing the work.</p>
+      <p>On your first morning, Donald, the warehouse lead, meets you at the entrance. "This whole building is one warehouse number in the system," he says. You think of the hub at Carr Industries. Same idea, one building, one number.</p>
+      <p>He walks you through. The receiving dock. The small-parts shelving. The bulk floor where batteries sit. The racks in the back. The taped lanes up front. "Each of those is a storage type," he says. "A neighborhood of bins that share the same rules." Inside the small-parts shelving, the fast movers sit up front in their own storage section.</p>
+      <p>He taps a label on a shelf: 2-2-202. "That's a storage bin. A location address, not a container. Aisle 2, section 2, level 202." Other warehouse systems call it a location or a slot. At Carr Industries, it's the shelf location label you scan every day.</p>
+      <p>"Did someone type in every one of these?" you ask.</p>
+      <p>"Nope. Someone set up a bin structure, aisle-section-level, and the system generated thousands of bins at once."</p>
+      <p>He points to a yellow line painted along the floor. "That's a picking route. In the system it's an activity area, a group of bins for one kind of work. Counting zones are activity areas too."</p>
+      <p>The dock and the staging lanes are special, he explains. "They're interim storage types. In-between places where stock waits between moves." The big supply of every part lives in reserve storage in the back. Trucks back up to numbered dock doors, and in front of each door is a staging area, the waiting room between the shelf and the truck. Your store lanes at the hub, you realize. Same thing, different name.</p>
+      <p>Near the dock is a table stacked with empty totes. "The deconsolidation station," Donald says. "Where mixed pallets get split up." Farther along is a station with a scale and a label printer. "The packing work center. Where outgoing parts get checked and boxed."</p>
+      <p>"That's the map," he says. "Now let's look at what's on it."</p>
+      <h4 class="chap"><span>Chapter 2</span>The sticky-note glasses</h4>
+      <p>Donald pulls a gray plastic tote off a shelf. It has a barcode sticker on the side.</p>
+      <p>"A tote is just a container until it gets a barcode," he says. "Then it's a handling unit, an HU. Scan it once, and everything inside moves with it." He points at a pallet stacked with labeled boxes. "Boxes on a pallet, each with its own label. Those are nested handling units." The system also keeps a record of what kind of container each one is. That's its packaging material: tote, carton, or pallet.</p>
+      <p>At Carr Industries, you track parts individually, one scan per part. Here, one scan moves a whole tote. You've felt that tradeoff in every reconciliation.</p>
+      <p>Then Donald hands you a pair of goofy safety glasses. "Put these on. Pretend they show what the computer believes."</p>
+      <p>You put them on. Yellow sticky notes float in front of every shelf. Over 2-2-202, one note says:</p>
+      <blockquote class="screen">Oil filters: 4 (good)</blockquote>
+      <p>"The filters on the shelf are the stock," Donald says. "That note is the quant."</p>
+      <p>You remember the hook: quant is short for quantity. It's the computer's sticky note on a shelf, saying what's there and how many.</p>
+      <p>Donald counts on his fingers. "Bin, stock, quant. The shelf spot, the parts, and the system's note about them."</p>
+      <p>"And if the note and the shelf disagree?"</p>
+      <p>"The shelf wins. Always. The quant is the system's belief. The shelf is the truth."</p>
+      <p>He lifts out one filter with a dented can. "This one's damaged. Watch." He scans it and changes its stock type, the status that says whether stock can be used. A second note appears over the same bin:</p>
+      <blockquote class="screen">Oil filters: 3 (good)<br>Oil filters: 1 (blocked)</blockquote>
+      <p>"That's two quants in one bin," he says. "Same part, same shelf. But different stock types, so different notes."</p>
+      <p>He walks you through the three stock types. Unrestricted stock is good stock that stores can order. Blocked stock is counted but can't be sold or picked.</p>
+      <p>"At Carr Industries, we call that damaged," you say.</p>
+      <p>"Other places say on hold, quarantine, QC hold, non-sellable, or locked. Same idea."</p>
+      <p>The third is quality inspection stock: stock waiting for a decision before it can be used. Customer returns usually start there, just like the returns you put away at the hub. Someone checks them before they become unrestricted again.</p>
+      <h4 class="chap"><span>Chapter 3</span>The part nobody introduced</h4>
+      <p>Back at the dock, a box of new LED headlight bulbs has arrived. You scan it. The scanner says:</p>
+      <blockquote class="screen">Product unknown</blockquote>
+      <p>"The system has never met this part," Donald says. "That message means it has no product master record yet."</p>
+      <p>He explains the names. "In EWM, a part is a product. Upstairs in S/4HANA, the same part is a material. Most warehouse people just say SKU, stock keeping unit." At Carr Industries, it's simply a part, and its part number is what SAP would call the product number or material number.</p>
+      <p>He pulls up an oil filter's record on his screen. Weight. Dimensions. How many come in a case. Which neighborhood it belongs in. "This is the product master," he says. "Upstairs, they call the same record the material master. Every decision about storing a part depends on it: which bin it fits, how many go in a tote, what a full case looks like."</p>
+      <p>"What if it's wrong?"</p>
+      <p>"Then everything downstream is wrong." He tells you about the time someone entered a battery's weight as 4 pounds instead of 40. The system kept sending batteries to top shelves until someone noticed.</p>
+      <p>An hour later, someone upstairs creates the record for the LED bulbs. You scan again, and this time the scanner sends you to 3-1-104.</p>
+      <h4 class="chap"><span>Chapter 4</span>A truck arrives</h4>
+      <p>At ten, a supplier's truck backs into dock door 3. Donald already has its list on his screen.</p>
+      <p>"Our buyer upstairs sent this supplier a purchase order," he says. "That created this inbound delivery: the list of what's arriving on the truck."</p>
+      <p>It's your manifest, you think. At the hub, a manifest goes both ways. For an incoming truck, SAP calls it an inbound delivery. For an outgoing truck, an outbound delivery.</p>
+      <p>Receiving means checking the truck against the inbound delivery before accepting it. At Carr Industries, that's validating a shipment against its paperwork. You count. Thirty-nine boxes of brake pads, not forty.</p>
+      <p>"Record the quantity difference now," Donald says. "Before we post anything." At the hub, you'd call that a shipment that came in short or missing on delivery.</p>
+      <p>Then Donald posts the goods receipt. "Now the stock is officially ours." At Carr Industries, that's accepting the shipment.</p>
+      <p>The boxes sit on the dock: received, but not shelved yet. "The dock is an interim storage type," Donald says, "so the system still knows exactly where they are." You remember parts that seemed to vanish at the hub in that same gap. Here, they can't.</p>
+      <p>Next comes putaway: moving received stock from the dock to its bin. At the hub, you'd call it restocking new stock. Your scanner buzzes with a warehouse task, an instruction to move stock from one bin to another:</p>
+      <blockquote class="screen">Move HU 50001234 from DOCK-01 to 4-1-301</blockquote>
+      <p>You carry the box to 4-1-301, scan the product, scan the bin, and tap confirm. Confirming a task is what tells the system the move is done, so it can update the quants. It's exactly what you do at Carr Industries when you scan the part, then scan the shelf.</p>
+      <p>One pallet is mixed: brake pads, wiper blades, and oil filters stacked together. The scanner sends it to the deconsolidation station. Deconsolidation breaks it into separate totes, one per destination area. At the hub, you do this by hand when you sort a mixed delivery.</p>
+      <p>Your putaway work arrives as one warehouse order: thirteen tasks bundled into one efficient trip for one worker. "Who decides how they're bundled?" you ask.</p>
+      <p>"The warehouse order creation rules," Donald says. "Same area, a sensible number of tasks, a good walking route."</p>
+      <h4 class="chap"><span>Chapter 5</span>Where everything lives</h4>
+      <p>"How did the scanner know to send that box to 4-1-301?" you ask.</p>
+      <p>"A putaway strategy," Donald says. "The rule that chooses a bin when stock comes in. Each neighborhood has one."</p>
+      <p>He counts them off. Batteries use next empty bin: any open spot works. Oil filters use fixed bin: they always live in 2-2-202. Brake pads use addition to existing stock: new pads go into a bin that already holds pads. And if a whole neighborhood is full, the storage type search sequence tells the system which neighborhood to try next.</p>
+      <p>"Here, the system chooses the bin and sends it to your scanner. That's system-directed putaway."</p>
+      <p>At Carr Industries, you choose the shelf yourself, then scan it to confirm. In SAP terms, that's a worker-chosen destination bin. And because parts at the hub have no fixed homes and go wherever there's room, that's dynamic slotting. In SAP, it looks like no fixed bins, with a putaway strategy like next empty bin.</p>
+      <p>The planning behind all those homes is slotting: deciding where each product should live based on its size, its weight, and how fast it moves. When wiper blades become fast movers every winter, the system suggests rearrangement, moving parts to better bins. "Slotting decides where a part should live," Donald says. "Putaway takes it there."</p>
+      <p>You mention the planogram in Carr Industries stores: a retail map of exactly where each product goes on a shelf. It even sets how many facings each product gets. A facing is one product's front showing on the shelf. Best sellers go at eye level, heavy items go low, and slow movers go up high.</p>
+      <p>"Close cousin," Donald says. "A planogram is a person's drawing for a store shelf. Slotting is the system's calculation for a warehouse bin." In SAP, the nearest thing to a planogram is fixed bin assignments plus slotting.</p>
+      <p>Back at 2-2-202, only three oil filters are left. A forklift driver's scanner buzzes: bring a case from reserve bin 8-1-401. That's replenishment: refilling a pick shelf from reserve storage when it drops below its minimum. At the hub, you'd call it refilling a shelf from the back. Each pick bin has a min and max, the levels that trigger and limit a refill.</p>
+      <p>"Who sets those?" you ask.</p>
+      <p>"An inventory analyst, based on how fast each part moves." He looks at you. "Maybe you, someday."</p>
+      <p>A move from one shelf to another is an internal move. And every task, whether putaway, picking, replenishment, or internal move, carries a label called its warehouse process type. It says what kind of move the task is and which rules it follows.</p>
+      <h4 class="chap"><span>Chapter 6</span>Twelve stores call</h4>
+      <p>After lunch, the phones start ringing. The Main Street store needs two alternators, six oil filters, and a case of wiper blades.</p>
+      <p>Donald enters a sales order, which creates an outbound delivery: the list of what's leaving and for whom. It's like an order entered in CarrNet at Carr Industries. "Inbound and outbound deliveries are mirror images," he says. "What's arriving, and what's leaving."</p>
+      <p>Some orders go to another T-Brothers location. Those are stock transfers: moving stock to another location in the same company, shipped on an outbound delivery. It's the same as your transfers to other stores at the hub.</p>
+      <p>By three o'clock, twelve stores have called. Donald groups the six east-route orders into a wave, because they all leave on the 5 p.m. truck. At the hub, those are picks timed to a truck departure. He releases the wave, which creates all of its picking tasks at once.</p>
+      <p>You test yourself out loud. "Wave versus warehouse order: a wave groups deliveries by deadline, and a warehouse order groups tasks for one worker."</p>
+      <p>"Exactly."</p>
+      <p>Picking moves stock from its bin toward staging for an outbound delivery. Each pick is a warehouse task, just like a pick in the Carr Picking app. Once you start your warehouse order, it's assigned to you, and nobody else can take it. That's just like the Carr Picking app locking a pick to whoever started it.</p>
+      <p>The batteries are spread across three bins. Which one do you pick from? A removal strategy decides. Batteries use FIFO, first in, first out, because they lose charge sitting on a shelf. Anything with an expiration date uses FEFO, first expired, first out. And LIFO, last in, first out, ships the newest stock first when age doesn't matter.</p>
+      <p>At the packing work center, packing checks every picked part against the delivery. The parts go into a shipping carton that becomes a new HU, and it gets a label. The carton rides a conveyor to staging lane E-3.</p>
+      <p>At 4:45, the east-route truck is loaded and the doors close. Only then does Donald post the goods issue, which makes the outgoing stock officially gone. "Only once the truck is really loaded," he says. "Never before." At the hub, that's loading the truck and sending it out.</p>
+      <h4 class="chap"><span>Chapter 7</span>The scanner&#x27;s rhythm</h4>
+      <p>The next day, Donald lets you run picks on your own. You log into the RF scanner, the handheld that asks one question at a time and checks every scan. RF stands for radio frequency, the warehouse word for handheld scanners. At Carr Industries, it's simply the warehouse scanner.</p>
+      <p>The RF menu lists your jobs: putaway, picking, physical inventory, and inquiry. You choose picking, and the RF rhythm settles in. Scan the bin, scan the product, enter the quantity, go to the destination. Each scan proves you're in the right place with the right part.</p>
+      <p>At 2-4-101, the scanner wants two alternators. There's only one.</p>
+      <p>You hear Donald's voice in your head: never confirm a wrong quantity. Instead, you enter an exception code, which is how you tell the scanner reality didn't match what it expected. You choose bin denial, meaning the bin can't supply the full pick quantity. At the hub, you'd call it a short shelf during a pick. The scanner sends you to 2-4-103 for the second alternator, and it flags 2-4-101 for a count.</p>
+      <p>You slip the sticky-note glasses back on to watch what happens.</p>
+      <p>As you confirm the pick, the note over 2-4-103 drops by one, and a new note appears over staging lane E-3. That's what updates a quant: confirming a warehouse task. Scanning without confirming changes nothing.</p>
+      <p>The lesson clicks. The quant follows the stock. When stock moves, its note moves with it, even to the dock or a staging lane.</p>
+      <p>At 4:45, the truck pulls away and Donald posts the goods issue. You watch the note over lane E-3 fade out. That's when a quant disappears: when the goods issue is posted and the stock leaves inventory.</p>
+      <h4 class="chap"><span>Chapter 8</span>Count day</h4>
+      <p>The next morning, your scanner says: Count bin 2-2-202.</p>
+      <p>"Are we shutting down for a full inventory?" you ask.</p>
+      <p>"Almost never," Donald says. "Physical inventory is EWM's name for the whole counting process. We do cycle counting: a few bins every day, with the fast movers counted most often." It's the same idea as the hand counts you did several times a day at the hub.</p>
+      <p>The scanner doesn't show how many it expects. It's a blind count, so you count what's really there instead of agreeing with a number. One good filter, plus the dented one.</p>
+      <p>The quant said two good filters. Your count lands in the difference analyzer, where count mismatches are investigated and posted. It shows up as an inventory difference: a count that doesn't match the quant. It's the same comparison you made at Carr Industries when matching counts against dispatch records.</p>
+      <p>"So we fix it to one?" you ask.</p>
+      <p>"Not yet. Investigate before posting. Check open tasks, staging, and nearby bins first." He orders a recount to be sure, and a coworker counts the bin again. Still one.</p>
+      <p>You check staging lane E-3. There's the missing filter. Someone picked it but never confirmed the task. That's an unconfirmed task and quants problem: the quant stayed at the old bin while the stock was somewhere else, so the count couldn't match.</p>
+      <p>The root cause was a skipped confirm, not a lost part. At Carr Industries, investigating a missing part works the same way. In SAP, it's called working the difference analyzer.</p>
+      <p>"That's fixing a wrong quant," Donald says. "Investigate first, then post." If the filter had truly been gone, he would be posting the difference: changing the system's numbers for good. At the hub, that's fixing the count after investigating. Small differences, he can post himself. Approval for large differences goes to a manager.</p>
+      <p>Later that day, you find a box of spark plugs in an aisle with no record at all. That's surplus: found stock the system didn't know about. At Carr Industries, it's a part found with no record. And a part that arrives with no assigned shelf? In SAP, the system finds no destination bin, so the part waits in receiving until someone assigns one.</p>
+      <p>"All of this is about inventory accuracy," Donald says. "How closely the system's records match what's physically on the shelves."</p>
+      <h4 class="chap"><span>Chapter 9</span>The control tower</h4>
+      <p>At 4:30, the east-route wave is stuck at 94%. Donald doesn't run onto the floor. He opens the warehouse monitor by typing /SCWM/MON. On one screen, he can see open tasks, warehouse orders, waves, stock, and who is working on each one.</p>
+      <p>One task is still open, assigned to Prince in aisle D. Donald radios him. Prince is stuck behind a forklift. Two minutes later, the task turns green.</p>
+      <p>At the hub, you'd have to go hunting to find out who had a stuck pick. Here, it takes one screen. It reminds you of watching the ServiceNow queue at Corey Financial Company: spot what's overdue, see who owns it, and chase down why.</p>
+      <p>On the way upstairs, Donald explains the bigger picture.</p>
+      <p>"SAP EWM, Extended Warehouse Management, runs this floor. It replaced SAP's older warehouse system, Classic WM. And S/4HANA is the company-wide SAP system that purchasing, sales, and accounting use."</p>
+      <p>"So what's the difference?"</p>
+      <p>"Upstairs vs downstairs. Upstairs, S/4HANA knows how many alternators the company has. Down here, EWM knows exactly which bins they're in."</p>
+      <p>At T-Brothers, EWM runs inside S/4HANA as one system with one database. That's embedded EWM. Some companies run decentralized EWM instead: a separate system connected to S/4HANA. Why decentralized? So a busy warehouse keeps running when the main system is down for maintenance.</p>
+      <p>Upstairs, you see two kinds of screens. One looks like a phone's home screen, full of colorful tiles. That's Fiori, SAP's newer app-style screens that run in a web browser. The page of tiles is the Fiori launchpad, and each tile opens one app. The other screen is plain and gray, with a small box at the top. That's SAP GUI, the older style, where you type a transaction code like /SCWM/MON to open a screen.</p>
+      <h4 class="chap"><span>Chapter 10</span>Upstairs with Robert</h4>
+      <p>Donald introduces you to Robert, the warehouse systems analyst. He's the one who configures EWM.</p>
+      <p>"Donald says you want to do what I do someday," he says. "Pull up a chair."</p>
+      <p>He types SPRO into the box on the SAP GUI screen. A long tree of folders opens. "This is the IMG, the Implementation Guide. It's the settings tree where almost every SAP setting lives."</p>
+      <p>"So this is configuration?"</p>
+      <p>"Right. The structure and rules of the system, the kind of thing that changes rarely. SAP's own word for it is customizing." He clicks through folders: goods receipt, goods issue, physical inventory. "And configuration is not coding. It's filling in settings, tables, checkboxes, and dropdowns. When something needs real code, a developer writes it in ABAP, SAP's programming language. That's a different job."</p>
+      <p>Today he wants oil filters to go to the front of aisle 2. You ask if he's changing it right now.</p>
+      <p>He laughs. "Never on the live system." He draws three boxes on the whiteboard. "We have three copies of SAP. I make the change in the development system, the sandbox. Then it's tested in the quality system. Only after that does it reach the production system, the live copy the floor uses."</p>
+      <p>His change travels in a transport request, a package that carries the change from one system to the next. He draws arrows between the boxes: the transport path runs from development, to quality, to production.</p>
+      <p>"That's change control," you say. "At Corey Financial Company, I took change records through the approval board. Scope, testing, rollback."</p>
+      <p>"Same discipline, SAP style." Then he turns serious. "Here's why caution with configuration matters. One setting affects every task at once. Goods movements move money in accounting. And rolling back a setting doesn't move the boxes back."</p>
+      <p>He draws one more picture: a board game. "Master data is the things that exist: bins, products, packaging materials. Configuration is the rules. Transactional data is the moves people make every day: deliveries, warehouse tasks, goods receipts."</p>
+      <p>"So when something goes wrong, I ask rule or thing or event?"</p>
+      <p>"Exactly. That battery entered as 4 pounds was a thing, so it was master data, not configuration."</p>
+      <p>He adds one more difference. Who changes master data? Key users and analysts, usually directly in production. Who changes configuration? Configurers like Robert, in development, moved to production by transports.</p>
+      <h4 class="chap"><span>Chapter 11</span>The test</h4>
+      <p>Robert's oil filter change has reached the quality system. He slides a laptop across the desk. "You did QA at Corey Financial Company, right? Then you test it."</p>
+      <p>He hands you a test script: a step-by-step list of actions, each with an expected result so you can mark it pass or fail.</p>
+      <div class="tbl"><table><thead><tr><th>Step</th><th>Action</th><th>Expected result</th></tr></thead><tbody><tr><td>1</td><td>Create an inbound delivery for 12 oil filters</td><td>Delivery created</td></tr><tr><td>2</td><td>Post the goods receipt</td><td>Stock shows in the dock area</td></tr><tr><td>3</td><td>Create the putaway task</td><td>Destination is the front of aisle 2</td></tr><tr><td>4</td><td>Confirm the task on the RF scanner</td><td>Quant appears in the new bin</td></tr></tbody></table></div>
+      <p>Step 3 sends the filters to 2-1-101, the front of aisle 2. Pass.</p>
+      <p>"Now the part people skip," Robert says. "Test what you didn't change."</p>
+      <p>That's regression testing: proving the change didn't break anything else. You run a brake pad putaway, and the pads still go to their usual spot. You run an oil filter pick from the new bin, and it works. Both pass.</p>
+      <p>You save screenshots of every step as test evidence. Robert's manager gives him sign-off, the approval that testing is complete, and the transport moves to production.</p>
+      <p>The next morning, the two of you watch the first real oil filter delivery go through. "That's the post-go-live check," Robert says. "Watching the first real transactions after a change goes live."</p>
+      <p>On big projects, he tells you, business users do this kind of testing too, right before go-live. It's called UAT, user acceptance testing. You realize your years of QA testing at Corey Financial Company map straight onto it: test scripts, regression testing, and UAT.</p>
+      <h4 class="chap"><span>Chapter 12</span>The key user panel</h4>
+      <p>Three months later, your cross-training wraps up. Back at Carr Industries, the hub is getting ready for its own EWM go-live, and it needs a site key user. Your operations manager runs the selection panel, and Donald joins to advise.</p>
+      <p>The manager starts. "What do you know about SAP EWM?"</p>
+      <p>You use the shape you practiced for panel: what do you know about EWM. What it is in one sentence, two or three key ideas, then how it connects to you. "It's SAP's warehouse management system, running inside S/4HANA. S/4HANA knows how much stock the company has, and EWM knows exactly where it is. Everything moves through warehouse tasks confirmed by RF scanning, which keeps the quants matched to the shelves. That's the problem I've worked on by hand at Carr Industries, and I watched EWM handle it every day at T-Brothers."</p>
+      <p>"How do you keep inventory accurate?"</p>
+      <p>For panel: how do you keep inventory accurate, you answer in three parts. "Prevent errors, catch them early, and fix the cause, not just the number."</p>
+      <p>Then Donald asks, "Tell me about a time you solved a discrepancy."</p>
+      <p>It's a behavioral question, asking for a real past example. So you use the STAR method: Situation, Task, Action, Result. Your panel: discrepancy story is the 13-store hub at Carr Industries. You built a manual reconciliation process, gave one specific example of a part that was dispatched but never scanned, and finished with the result: missing-part calls went from frequent to rare.</p>
+      <p>The manager leans back. "Three months ago, you'd never used EWM. Why should we pick you over someone from the project team who had?"</p>
+      <p>This is panel: why pick you without EWM, and you've practiced bridging: acknowledging a gap in one sentence, then moving to what you do bring. "That's fair. I started without EWM experience. But I bring floor experience, nineteen years of IT and QA, and change control expertise from Corey Financial Company. I'm already learning, and I've worked in EWM every day for three months at T-Brothers. Long-term, I'd like to grow into the systems side."</p>
+      <p>"Do you have questions for us?"</p>
+      <p>You remember the order of your questions: role questions first, growth path last.</p>
+      <p>You start with panel: questions about their setup. You already know the rollout will use embedded EWM on both RF and Fiori, so you ask when the hub goes live and what changes come first. Next come panel: questions about accuracy: how the project will measure inventory accuracy, and how cycle counting will decide what gets counted. You save panel: questions about growth for last: does the key user work with the EWM support team, how do super-users get picked, and has anyone moved from operations into systems?</p>
+      <p>Donald smiles at that last one. A week later, your manager tells you the key user role is yours.</p>
+      <h4 class="chap"><span>Chapter 13</span>One year later</h4>
+      <p>A year after that first morning at T-Brothers, the hub at Carr Industries is live on EWM, and people come to you with their EWM questions. You're the site's key user: the go-to person inside the company who knows the system best and supports others. Each shift also has a super-user, a floor-level expert who helps coworkers use the system. You trained most of them.</p>
+      <p>Robert, the warehouse systems analyst at T-Brothers, still sits between the warehouse floor and IT, troubleshooting and supporting the system. You still call him when you get stuck. This spring, a functional consultant from an SAP partner firm arrived to design and configure your company's S/4HANA upgrade, and your manager put you on the project team.</p>
+      <p>You think about the career path to configuration you sketched a year ago: user-side role, then key user, then implementation project, then configuration. You're on step three.</p>
+      <p>In the evenings, you've been working through SAP Learning, SAP's site at learning.sap.com with free EWM courses. You're following its learning journey, SAP's recommended sequence of courses for a certification.</p>
+      <p>The certification is C_S4EWM, the exam code for SAP Certified Associate – Extended Warehouse Management in SAP S/4HANA. The SAP EWM certification is aimed at consultants, but it doesn't require project experience. It's a hands-on exam, and you'll keep it valid with a yearly assessment. With system access every day, you're ready.</p>
+      <p>On a visit back to T-Brothers one evening, you pass 2-2-202. Four oil filters on the shelf. You picture the sticky note floating above them: Oil filters: 4 (good).</p>
+      <p>The note and the shelf agree.</p>
       <p class="theend">The End</p>
   </article>
 
@@ -1114,7 +1418,7 @@ showMoonTides(); setInterval(showMoonTides,600000);
 
 // ---- Show/hide buttons for the word list and the story ----
 (function(){
-  [["glossbtn","glosspanel","What do these words mean?","Hide the word list"],["storybtn","storypanel","Read the story","Hide the story"]].forEach(function(x){
+  [["glossbtn","glosspanel","What do these words mean?","Hide the word list"],["storybtn","storypanel","Read the story","Hide the story"],["sixbtn","sixpanel","Six Sigma story","Hide the Six Sigma story"],["ewmbtn","ewmpanel","SAP EWM story","Hide the SAP EWM story"]].forEach(function(x){
     var btn=$(x[0]), panel=$(x[1]);
     btn.addEventListener("click",function(){
       var open=panel.hasAttribute("hidden"), row=$("btnrow");
