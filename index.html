@@ -103,6 +103,8 @@ section.card:nth-of-type(odd){background:#fffdf5}
 .tidelist{list-style:none;margin:14px 0 0;padding:0;font-size:14px}
 .tidelist li{display:flex;gap:8px;padding:3px 0;border-bottom:1px dashed var(--line)}
 .tidelist b{min-width:3.2em}
+.toggle{margin-top:10px;padding:8px 14px;font:700 14px system-ui,sans-serif;color:var(--ink);background:#fff;border:3px solid var(--ink);border-radius:12px;box-shadow:3px 3px 0 var(--ink);cursor:pointer}
+.toggle:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
 .kdaytick{stroke:var(--ink);stroke-width:2.5}
 .kdaylbl{fill:var(--muted);font:700 11px system-ui,sans-serif}
 .kdaylbl.today{fill:#ff7a00;font-size:13px}
@@ -272,6 +274,7 @@ h1{animation:none}
   <div class="cap" id="cap_snow"></div>
   <div class="grid3" id="snowtiles"></div>
   <div class="chart" id="snowchart"></div>
+  <button type="button" class="toggle" id="snowtoggle">Show the whole mountain, up to the summit</button>
   <ul class="tidelist" id="snowlist"></ul>
 
   <h2>Moon</h2>
@@ -833,32 +836,52 @@ function showDaylight(p){
 }
 
 // ---- Snow line, Mt. Hood (Open-Meteo freezing level) ----
-var SNOWSPOTS=[["Portland",50],["Government Camp",3900],["Timberline Lodge",6000]];
+var SNOWSPOTS=[["Portland",50],["Government Camp",3900],["Timberline Lodge",6000],["Mt. Hood summit",11249]], snowFull=false;
 function ftr(m){return m*3.28084}
 function round100(f){return Math.round(f/100)*100}
 function commas(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,",")}
 function drawSnow(fz,t0){
-  var W=720,H=260,L=64,R=14,T=14,B=48,i, mx=7500;
-  fz.forEach(function(v){mx=Math.max(mx,v+500)}); mx=Math.ceil(mx/1000)*1000;
+  var W=720,H=270,L=64,R=14,T=18,B=48,i, vals=fz.filter(function(v){return v!==null}), mn=Math.min.apply(null,vals), mx=Math.max.apply(null,vals);
+  var lo=Math.max(0,Math.floor((mn-600)/500)*500), hi=Math.ceil((mx+600)/500)*500;
+  if(hi-lo<2000)hi=lo+2000;
+  if(snowFull){lo=0;hi=12000}
   var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"Line chart of the forecast freezing level over Mt. Hood for the next 24 hours, in feet"});
   var pw=W-L-R, ph=H-T-B, n=fz.length;
+  function Y(v){return T+ph-ph*(v-lo)/(hi-lo)}
   for(i=0;i<=4;i++){
-    var y=T+ph-ph*i/4;
+    var gv=lo+(hi-lo)*i/4, y=Y(gv);
     svg.appendChild(el("line",{x1:L,x2:W-R,y1:y,y2:y,"class":"gl"}));
-    svg.appendChild(el("text",{x:L-8,y:y+4,"text-anchor":"end","class":"ax"},commas(Math.round(mx*i/4))));
+    svg.appendChild(el("text",{x:L-8,y:y+4,"text-anchor":"end","class":"ax"},commas(Math.round(gv/100)*100)));
   }
-  [["Government Camp",3900],["Timberline",6000]].forEach(function(sp){
-    var y=T+ph-ph*sp[1]/mx;
+  [["Government Camp",3900],["Timberline",6000],["Summit",11249]].forEach(function(sp){
+    if(sp[1]<lo||sp[1]>hi)return;
+    var y=Y(sp[1]);
     svg.appendChild(el("line",{x1:L,x2:W-R,y1:y,y2:y,stroke:"#1e6bff","stroke-dasharray":"6 5","stroke-width":2}));
     svg.appendChild(el("text",{x:W-R-4,y:y-5,"text-anchor":"end","class":"ax"},sp[0]+" "+commas(sp[1])+" ft"));
   });
-  var pts=[]; fz.forEach(function(v,k){pts.push((L+pw*k/(n-1)).toFixed(1)+","+(T+ph-ph*Math.max(0,v)/mx).toFixed(1))});
-  svg.appendChild(el("polyline",{points:pts.join(" "),"class":"pline"}));
+  var seg=[], segs=[];
+  fz.forEach(function(v,k){
+    if(v===null){if(seg.length)segs.push(seg);seg=[];return}
+    seg.push((L+pw*k/(n-1)).toFixed(1)+","+Y(v).toFixed(1));
+  });
+  if(seg.length)segs.push(seg);
+  segs.forEach(function(sg){svg.appendChild(el("polyline",{points:sg.join(" "),"class":"pline"}))});
+  fz.forEach(function(v,k){
+    if(v===null)return;
+    var c=el("circle",{cx:L+pw*k/(n-1),cy:Y(v),r:3.5,"class":"pdot"});
+    c.appendChild(el("title",{},(k===0?"Now":fmt(t0+k*3600000))+": "+commas(round100(v))+" ft"));
+    svg.appendChild(c);
+  });
+  var first=fz.findIndex(function(v){return v!==null}), last=n-1-fz.slice().reverse().findIndex(function(v){return v!==null});
+  svg.appendChild(el("text",{x:L+pw*first/(n-1)+4,y:Y(fz[first])-10,"text-anchor":"start","class":"ax"},commas(round100(fz[first]))+" ft"));
+  svg.appendChild(el("text",{x:L+pw*last/(n-1)-4,y:Y(fz[last])-10,"text-anchor":"end","class":"ax"},commas(round100(fz[last]))+" ft"));
   for(i=0;i<n;i+=6){
     svg.appendChild(el("text",{x:L+pw*i/(n-1),y:H-26,"text-anchor":i===0?"start":(i>=n-1?"end":"middle"),"class":"ax"},i===0?"now":fmt(t0+i*3600000).replace(" ","")));
   }
   svg.appendChild(el("text",{x:L+pw/2,y:H-4,"text-anchor":"middle","class":"ax"},"Freezing level over Mt. Hood, feet above sea level, next 24 hours"));
-  var c=$("snowchart"); c.textContent=""; c.appendChild(svg);
+  var c2=$("snowchart"); c2.textContent=""; c2.appendChild(svg);
+  window.snowFz=fz; window.snowT0=t0;
+  var btn=$("snowtoggle"); btn.textContent=snowFull?"Zoom in on the freezing level":"Show the whole mountain, up to the summit";
 }
 function showSnow(){
   omFetch("https://api.open-meteo.com/v1/forecast?latitude=45.3736&longitude=-121.6959&hourly=freezing_level_height,snowfall&precipitation_unit=inch&past_hours=1&forecast_hours=25&timezone=America%2FLos_Angeles&timeformat=unixtime")
@@ -867,9 +890,10 @@ function showSnow(){
     for(i=0;i<t.length;i++){if(t[i]<=nowS)i0=i}
     if(i0<0)throw new Error("Open-Meteo reply didn't include the current hour");
     var fz=[], snow=0;
-    for(i=i0;i<Math.min(t.length,i0+25);i++){ if(typeof f[i]==="number")fz.push(ftr(f[i])); if(typeof sn[i]==="number"&&i>i0)snow+=sn[i]; }
-    if(fz.length<12)throw new Error("Open-Meteo only sent "+fz.length+" hours of freezing-level data");
-    var cur=fz[0], line=Math.max(0,cur-1000), mn=Math.min.apply(null,fz), mx=Math.max.apply(null,fz);
+    for(i=i0;i<Math.min(t.length,i0+25);i++){ fz.push(typeof f[i]==="number"?ftr(f[i]):null); if(typeof sn[i]==="number"&&i>i0)snow+=sn[i]; }
+    var good=fz.filter(function(v){return v!==null});
+    if(good.length<12||fz[0]===null)throw new Error("Open-Meteo only sent "+good.length+" of 25 hours of freezing-level data");
+    var cur=fz[0], line=Math.max(0,cur-1000), mn=Math.min.apply(null,good), mx=Math.max.apply(null,good);
     window.snowKind=line<3900?"low":(line<6000?"mid":"high");
     var tl=$("snowtiles"); tl.textContent="";
     [["Freezing level now",commas(round100(cur))+" ft","Where the air hits 32\u00B0F"],["Snow line (rough)",commas(round100(line))+" ft","About 1,000 ft below freezing level"],["Next 24 hours",commas(round100(mn))+" to "+commas(round100(mx))+" ft","Range of freezing level"]].forEach(function(x){
@@ -897,6 +921,7 @@ function showSnow(){
     $("snownote").textContent="Couldn't load the snow line. "+errText(e)+". (Will retry in 10 minutes.)";
   });
 }
+$("snowtoggle").addEventListener("click",function(){snowFull=!snowFull;if(window.snowFz)drawSnow(window.snowFz,window.snowT0)});
 showSnow(); setInterval(showSnow,600000);
 
 // ---- Tide clock (NOAA CO-OPS predictions, Seaside station, nearest to Cannon Beach) ----
