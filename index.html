@@ -104,8 +104,16 @@ section.card:nth-of-type(odd){background:#fffdf5}
 .mtbar{height:16px;border:3px solid var(--ink);border-radius:10px;background:#fff;overflow:hidden;margin-top:10px}
 .mtbar span{display:block;height:100%;width:50%;background:#1e6bff}
 .mtscale{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px}
+.btnrow{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px}
+.btnrow .toggle{margin-top:0}
+.gloss[hidden]{display:none}
+.story{font-family:Georgia,"Times New Roman",serif;line-height:1.75;font-size:17px;max-width:46em}
+.story p{margin:0 0 1em}
+.storytitle{font-size:26px;line-height:1.2;margin:0 0 4px;letter-spacing:.02em}
+.storysub{font-style:italic;color:var(--muted)!important;margin:0 0 1.4em!important}
+.scene{text-align:center;letter-spacing:.6em;color:var(--muted);margin:1.2em 0}
+.theend{text-align:center;font-weight:700;margin-top:1.6em!important}
 .gloss{margin-top:14px;background:var(--surface);border:3px solid var(--ink);border-radius:16px;box-shadow:6px 6px 0 var(--ink);padding:12px 16px}
-.gloss summary{cursor:pointer;font-weight:700}
 .gloss dt{font-weight:700;margin-top:10px}
 .gloss dd{margin:2px 0 0}
 .tidewater{fill:rgba(30,107,255,.30)}
@@ -297,8 +305,11 @@ h1{animation:none}
     <div class="tiles" id="mttiles" style="margin-top:14px"></div>
     <p class="note" id="mtalert"></p>
   </section>
-  <details class="gloss">
-    <summary>What do these words mean?</summary>
+  <div class="btnrow">
+    <button type="button" class="toggle" id="glossbtn" aria-expanded="false" aria-controls="glosspanel">What do these words mean?</button>
+    <button type="button" class="toggle" id="storybtn" aria-expanded="false" aria-controls="storypanel">Read the story</button>
+  </div>
+  <div class="gloss" id="glosspanel" hidden>
     <dl>
       <dt>Spring tide</dt><dd>Nothing to do with the season. It's the biggest kind of tide, with the highest highs and lowest lows. It happens around the new moon and the full moon, when the sun and moon pull on the ocean in a line.</dd>
       <dt>Neap tide</dt><dd>The smallest kind of tide, with highs that aren't as high and lows that aren't as low. It happens around the first and last quarter moon, when the sun and moon pull from different directions and partly cancel out.</dd>
@@ -311,7 +322,61 @@ h1{animation:none}
       <dt>Lunar day</dt><dd>24 hours 50 minutes, the time for the moon to come back to the same spot in the sky. It's why tide times shift about 50 minutes later each day.</dd>
       <dt>MLLW</dt><dd>Mean Lower Low Water, the zero line for tide heights on NOAA charts. It's the average of the lowest low tide of each day.</dd>
     </dl>
-  </details>
+  </div>
+  <article class="gloss story" id="storypanel" hidden>
+      <h3 class="storytitle">PEARL AND THE MOON'S LONG DAY</h3>
+      <p class="storysub">A fable of Cannon Beach, Oregon</p>
+      <p>Pearl was a hermit crab with a shell too small for her opinions. She lived in the tide pools at the foot of Haystack Rock, and every morning she woke up sure the ocean was cheating.</p>
+      <p>"Yesterday the water reached the purple sea star at breakfast," she told Barnacle Bea. "Today it's miles away. Where does it go?"</p>
+      <p>"Ask the Rock," said Bea.</p>
+      <p>Haystack Rock was two hundred thirty-five feet of grumpy basalt. He considered Pearl's question for a long time. "It doesn't leave," he said at last. "It's pulled. Come back tonight. The one who does the pulling will be up late."</p>
+      <div class="scene" aria-hidden="true">* * *</div>
+      <p>The moon rose over the Coast Range, round and a little smug.</p>
+      <p>"I tug on the ocean," she said, her voice faint, like a radio in another room. "The water on my side of Earth bulges toward me. Then Earth spins underneath the bulge, and your coast rolls through it. That's a high tide."</p>
+      <p>"So the ocean isn't coming and going," said Pearl. "We're moving?"</p>
+      <p>"You've been riding a giant merry-go-round and blaming the water. There's a second bulge on the far side of Earth, too, so as you spin you pass through two highs and two lows a day. Most coasts do."</p>
+      <p>Pearl scratched it into the sand: two and two.</p>
+      <p>The next morning she waited at the Garden of Sea Stars at 7:00 sharp, because yesterday's high tide had been at 7:00. The water arrived fifty minutes late, and she was soaked and furious.</p>
+      <p>"You didn't say they were late!" she told the moon that night.</p>
+      <p>"I'm moving too," said the moon. "While Earth spins once, I've wandered along my orbit, so Earth has to turn extra to catch up. A lunar day is twenty-four hours fifty minutes. The tides slide about fifty minutes later every day."</p>
+      <p>"That's terrible for brunch."</p>
+      <p>"Brunch is a land concern."</p>
+      <div class="scene" aria-hidden="true">* * *</div>
+      <p>Pearl became a scholar. She kept a driftwood notebook and found that high tides were usually about twelve hours twenty-five minutes apart. "Usually," she told Bea. "It's an average, not a promise. Some cycles run shorter, some longer."</p>
+      <p>She also noticed the two highs each day never matched. One reached the driftwood line, and the next stopped a few feet lower. The lows were uneven too.</p>
+      <p>"Mixed semidiurnal," said the Rock, unprompted. "Two highs, two lows, usually unequal. It's what this coast does. I find it gives the place character."</p>
+      <div class="scene" aria-hidden="true">* * *</div>
+      <p>Over the weeks, Pearl saw a bigger rhythm. For a few days the water leapt enormously high and drained shockingly low. A week later it barely stirred.</p>
+      <p>"That's the sun," whispered the moon. "Don't tell him. He's proud. He pulls on the ocean too. When the sun and I line up, at new moon and full moon, we pull together: the highest highs and lowest lows. Those are spring tides."</p>
+      <p>"So they happen in spring?"</p>
+      <p>"They happen all year. It's from the old word for leaping up. Nothing to do with the season."</p>
+      <p>"Confusing name."</p>
+      <p>"Humans named it. When I'm at first or last quarter, the sun pulls from one direction and I pull from another, and we partly cancel out. Those are neap tides, the smallest ones. Spring to neap and back to spring takes about fourteen and eight-tenths days."</p>
+      <div class="scene" aria-hidden="true">* * *</div>
+      <p>Winter came. One evening the moon looked bigger than usual.</p>
+      <p>"My orbit isn't a circle," she said. "At perigee I'm about 226,000 miles away. At apogee, about 252,000. Closer, I pull harder. Tonight is a full moon and perigee."</p>
+      <p>"A spring tide at perigee," said Pearl slowly.</p>
+      <p>"A perigean spring tide. Extra big. And in winter on your coast, the highest tides of the year arrive. King tides. They're only a real problem when a storm shoves more water on top of them."</p>
+      <p>Pearl looked at the horizon. A gray wall of cloud was moving in.</p>
+      <div class="scene" aria-hidden="true">* * *</div>
+      <p>She hurried to the Rock and found half the tide pool gathered in a panic, including an anxious chiton named Gordon.</p>
+      <p>"When's the big one?" he asked. "And how big?"</p>
+      <p>"The evening high will be the smaller of the day's two," said Pearl, checking her notebook. "Mixed semidiurnal. The big one comes around one a.m., give or take, since twelve twenty-five is only an average. But I can't say how big. 'Pretty big' doesn't help anyone."</p>
+      <p>"Allow me," said the Rock. "At my base, there's a painted line. Zero. It's called MLLW, Mean Lower Low Water, the average of each day's lowest tide. All the humans' charts measure from it. Without a zero, you can't say how high anything is."</p>
+      <p>Pearl measured in claw-lengths. "A normal high reaches here. The month's biggest tides left driftwood there. A king tide plus a storm will go past that." She turned. "Everyone up the Rock, above the driftwood line. And we have time to move the slow ones before the big high arrives."</p>
+      <p>All night the shore crabs ran a relay. Sea stars hauled themselves up in a determined line. Gordon rode a limpet. The anemones were tucked into a hollow just above the highest driftwood mark.</p>
+      <p>At half past midnight the wind arrived like a thrown bucket. Waves rode a rising sea past the zero line, past the normal mark, past the driftwood, until the water licked the edge of the hollow. It hung there a breathless moment. Then it began to fall.</p>
+      <p>"One a.m.," whispered Pearl. "Right on time."</p>
+      <div class="scene" aria-hidden="true">* * *</div>
+      <p>At dawn, kelp and one bewildered traffic cone littered the beach. The moon hung pale in the morning sky.</p>
+      <p>"You told me everything," said Pearl.</p>
+      <p>"I told you what I do. You worked out what it meant."</p>
+      <p>Pearl watched the water slide toward the horizon. It didn't leave. It was pulled.</p>
+      <p>"Same time tomorrow?" asked the moon.</p>
+      <p>"Fifty minutes later," said Pearl.</p>
+      <p>The moon laughed, a thin silver sound, and went to bed.</p>
+      <p class="theend">The End</p>
+  </article>
 
   <h2>Snow line: Mt. Hood</h2>
   <p class="note" id="snownote" aria-live="polite">Loading</p>
@@ -1042,6 +1107,19 @@ function showMoonTides(){
   }
 }
 showMoonTides(); setInterval(showMoonTides,600000);
+
+// ---- Show/hide buttons for the word list and the story ----
+(function(){
+  [["glossbtn","glosspanel","What do these words mean?","Hide the word list"],["storybtn","storypanel","Read the story","Hide the story"]].forEach(function(x){
+    var btn=$(x[0]), panel=$(x[1]);
+    btn.addEventListener("click",function(){
+      var open=panel.hasAttribute("hidden");
+      if(open)panel.removeAttribute("hidden"); else panel.setAttribute("hidden","");
+      btn.setAttribute("aria-expanded",open?"true":"false");
+      btn.textContent=open?x[3]:x[2];
+    });
+  });
+})();
 
 // ---- Tide clock (NOAA CO-OPS predictions, Seaside station, nearest to Cannon Beach) ----
 var TIDE_STATIONS=[["9438772","Seaside (12th Avenue bridge, Necanicum River)","about 8 miles north of Cannon Beach"],["9438478","Seaside (12th Avenue bridge, Necanicum River)","about 8 miles north of Cannon Beach"],["9437540","Garibaldi (Tillamook Bay)","about 25 miles south of Cannon Beach, so times can differ more"]], tideSt=0, tideData=null, tideFetched=0;
