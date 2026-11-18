@@ -305,7 +305,7 @@ h1{animation:none}
     <div class="tiles" id="mttiles" style="margin-top:14px"></div>
     <p class="note" id="mtalert"></p>
   </section>
-  <div class="btnrow">
+  <div class="btnrow" id="btnrow">
     <button type="button" class="toggle" id="glossbtn" aria-expanded="false" aria-controls="glosspanel">What do these words mean?</button>
     <button type="button" class="toggle" id="storybtn" aria-expanded="false" aria-controls="storypanel">Read the story</button>
   </div>
@@ -1113,8 +1113,12 @@ showMoonTides(); setInterval(showMoonTides,600000);
   [["glossbtn","glosspanel","What do these words mean?","Hide the word list"],["storybtn","storypanel","Read the story","Hide the story"]].forEach(function(x){
     var btn=$(x[0]), panel=$(x[1]);
     btn.addEventListener("click",function(){
-      var open=panel.hasAttribute("hidden");
-      if(open)panel.removeAttribute("hidden"); else panel.setAttribute("hidden","");
+      var open=panel.hasAttribute("hidden"), row=$("btnrow");
+      if(open){
+        row.insertAdjacentElement("afterend",panel); // newest panel goes right under the buttons, above the other one
+        panel.removeAttribute("hidden");
+        row.scrollIntoView({behavior:"smooth",block:"start"});
+      }else panel.setAttribute("hidden","");
       btn.setAttribute("aria-expanded",open?"true":"false");
       btn.textContent=open?x[3]:x[2];
     });
