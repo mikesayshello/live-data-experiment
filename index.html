@@ -1444,7 +1444,7 @@ var TIDE_DATUMS=[["MLLW","the average lowest tide of the day (MLLW)"],["CRD","th
 function loadTides(si,di){
   if(si===undefined){si=tideSt;di=tideDatum;tideLog=[]}
   var now=Date.now();
-  var url="https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=live_data_experiment&station="+TIDE_STATIONS[si][0]+"&begin_date="+ymdUTC(now-86400000)+"&end_date="+ymdUTC(now+3*86400000)+"&datum="+TIDE_DATUMS[di][0]+"&time_zone=gmt&units=english&interval=hilo&format=json";
+  var url="https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=live_data_experiment&station="+TIDE_STATIONS[si][0]+"&begin_date="+ymdUTC(now-86400000)+"&end_date="+ymdUTC(now+5*86400000)+"&datum="+TIDE_DATUMS[di][0]+"&time_zone=gmt&units=english&interval=hilo&format=json";
   function nextTry(){
     if(di+1<TIDE_DATUMS.length)return loadTides(si,di+1);
     if(si+1<TIDE_STATIONS.length)return loadTides(si+1,0);
@@ -1489,13 +1489,13 @@ function tideAt(ms){
   return null;
 }
 function drawTideChart(now){
-  var t0=now-3*3600000, t1=now+24*3600000, pts=[], mn=Infinity, mx=-Infinity, ms, v;
+  var t0=now-3*3600000, t1=now+72*3600000, pts=[], mn=Infinity, mx=-Infinity, ms, v;
   for(ms=t0;ms<=t1;ms+=900000){v=tideAt(ms); if(v===null)continue; pts.push([ms,v]); mn=Math.min(mn,v); mx=Math.max(mx,v)}
   if(pts.length<10)return;
   var W=720,H=290,L=56,R=20,T=30,B=52, pad=Math.max(0.6,(mx-mn)*0.12); var lo=mn-pad, hi=mx+pad;
   var pw=W-L-R, ph=H-T-B;
   function X(m){return L+pw*(m-t0)/(t1-t0)} function Y(q){return T+ph-ph*(q-lo)/(hi-lo)}
-  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"Wave-shaped graph of the predicted tide height for the next 24 hours at Cannon Beach"}), i;
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"Wave-shaped graph of the predicted tide height for the next 72 hours at Cannon Beach"}), i;
   for(i=0;i<=4;i++){
     var gv=lo+(hi-lo)*i/4, gy=Y(gv);
     svg.appendChild(el("line",{x1:L,x2:W-R,y1:gy,y2:gy,"class":"gl"}));
@@ -1505,11 +1505,15 @@ function drawTideChart(now){
   pts.forEach(function(q){d+=" L"+X(q[0]).toFixed(1)+","+Y(q[1]).toFixed(1)});
   svg.appendChild(el("path",{d:d+" L"+X(pts[pts.length-1][0]).toFixed(1)+","+(T+ph)+" L"+X(pts[0][0]).toFixed(1)+","+(T+ph)+" Z","class":"twave"}));
   svg.appendChild(el("path",{d:d,"class":"tline"}));
-  // hourly-ish time labels every 6 hours aligned to top of the hour
+  // time labels every 12 hours; midnight shows the weekday
   var firstHour=Math.ceil(t0/3600000)*3600000;
   for(ms=firstHour;ms<=t1;ms+=3600000){
     var hh=Number(new Date(ms).toLocaleString("en-US",{timeZone:TZ,hour:"numeric",hour12:false}))%24;
-    if(hh%6===0)svg.appendChild(el("text",{x:X(ms),y:H-26,"text-anchor":X(ms)>W-R-24?"end":(X(ms)<L+24?"start":"middle"),"class":"ax"},fmt(ms).replace(" ","")));
+    if(hh%12===0){
+      var lbl=hh===0?new Date(ms).toLocaleDateString("en-US",{timeZone:TZ,weekday:"short"})+" 12AM":"12PM";
+      svg.appendChild(el("line",{x1:X(ms),x2:X(ms),y1:T,y2:T+ph,"class":"gl"}));
+      svg.appendChild(el("text",{x:X(ms),y:H-26,"text-anchor":X(ms)>W-R-24?"end":(X(ms)<L+24?"start":"middle"),"class":"ax"},lbl));
+    }
   }
   // highs and lows
   tideData.forEach(function(q){
@@ -1517,15 +1521,14 @@ function drawTideChart(now){
     var x=X(q.t), y=Y(q.v);
     svg.appendChild(el("circle",{cx:x,cy:y,r:5,"class":"tidetip"}));
     var anchor=x<L+50?"start":(x>W-R-50?"end":"middle");
-    svg.appendChild(el("text",{x:x,y:q.hi?y-12:y+22,"text-anchor":anchor,"class":"ax"},(q.hi?"High ":"Low ")+q.v.toFixed(1)+" ft"));
-    svg.appendChild(el("text",{x:x,y:q.hi?y-26:y+36,"text-anchor":anchor,"class":"ax"},fmt(q.t)));
+    svg.appendChild(el("text",{x:x,y:q.hi?y-12:y+22,"text-anchor":anchor,"class":"ax"},q.v.toFixed(1)+" ft"));
   });
   // now marker
   var nx=X(now), nv=tideAt(now);
   svg.appendChild(el("line",{x1:nx,x2:nx,y1:T-8,y2:T+ph,"class":"tnow"}));
   if(nv!==null)svg.appendChild(el("circle",{cx:nx,cy:Y(nv),r:7,fill:"#ff7a00",stroke:"#1d2428","stroke-width":2}));
   svg.appendChild(el("text",{x:nx,y:T-12,"text-anchor":nx>W-R-40?"end":(nx<L+40?"start":"middle"),"class":"ax",fill:"#ff7a00","font-weight":"700"},"NOW"));
-  svg.appendChild(el("text",{x:L+pw/2,y:H-4,"text-anchor":"middle","class":"ax"},"Predicted tide height in feet, from 3 hours ago to 24 hours ahead"));
+  svg.appendChild(el("text",{x:L+pw/2,y:H-4,"text-anchor":"middle","class":"ax"},"Predicted tide height in feet (highs and lows labeled), from 3 hours ago to 72 hours ahead"));
   var c=$("tidechart"); c.textContent=""; c.appendChild(svg);
 }
 function drawTide(){
