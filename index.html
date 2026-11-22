@@ -125,8 +125,7 @@ section.card:nth-of-type(odd){background:#fffdf5}
 .tidewater{fill:rgba(30,107,255,.30)}
 .tidehandline{stroke:#0a7ea4;stroke-width:4;stroke-linecap:round}
 .tidetip{fill:#0a7ea4;stroke:var(--ink);stroke-width:1.5}
-.tidepill{fill:#fff;stroke:#0a7ea4;stroke-width:2}
-.tidelvltxt{fill:var(--ink);font:700 12px system-ui,sans-serif}
+.tideh{font-size:20px;font-weight:700;color:var(--ink)}
 .tidehub{fill:#0a7ea4;stroke:var(--ink);stroke-width:2}
 .tidelbl{fill:var(--muted);font:600 9px system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase}
 .tidestate{color:#0a7ea4!important}
@@ -300,7 +299,6 @@ h1{animation:none}
       <text x="48" y="104" text-anchor="middle" class="tidelbl">&#9650; rising</text>
       <g id="tidehand"><line x1="100" y1="100" x2="100" y2="30" class="tidehandline"/><circle cx="100" cy="26" r="6" class="tidetip"/></g>
       <circle cx="100" cy="100" r="6" class="tidehub"/>
-      <g id="tidelvl"><rect id="tidepill" x="68" y="0" width="64" height="20" rx="10" class="tidepill"/><text id="tidelvltxt" x="100" y="0" text-anchor="middle" class="tidelvltxt"></text></g>
     </svg>
   </section>
   <div class="chart" id="tidechart"></div>
@@ -1541,10 +1539,6 @@ function drawTide(){
   var mn=Infinity,mx=-Infinity; tideData.forEach(function(q){mn=Math.min(mn,q.v);mx=Math.max(mx,q.v)});
   var lvl=mx>mn?(h-mn)/(mx-mn):0.5, y=189-lvl*178;
   $("tidewater").setAttribute("y",y.toFixed(1));
-  var py=Math.min(176,Math.max(34,y-10));
-  $("tidepill").setAttribute("y",(py-14).toFixed(1));
-  $("tidelvltxt").setAttribute("y",py.toFixed(1));
-  $("tidelvltxt").textContent=h.toFixed(1)+" ft";
   $("tidestate").textContent=falling?"Falling":"Rising";
   var hiT=falling?a:b, loT=falling?b:a;
   $("tidehi").textContent="HIGH "+tideLbl(hiT.t,now)+(falling?" (was)":" (next)");
@@ -1553,7 +1547,7 @@ function drawTide(){
   $("tidelo").setAttribute("class","kdaylbl"+(falling?" tidenext":""));
   drawTideChart(now);
   window.tideWord=falling?"falling":"rising";
-  $("tideheight").textContent=tideDatum===0?"About "+h.toFixed(1)+" feet above the average low-tide line.":"About "+h.toFixed(1)+" feet, measured from "+TIDE_DATUMS[tideDatum][1]+".";
+  $("tideheight").className="note tideh"; $("tideheight").textContent=h.toFixed(1)+"' "+(tideDatum===0?"above avg low tide line":"from "+TIDE_DATUMS[tideDatum][1]);
   var nh=null,nl=null;
   for(var m=i+1;m<tideData.length;m++){if(tideData[m].hi&&!nh)nh=tideData[m];if(!tideData[m].hi&&!nl)nl=tideData[m]}
   var tl=$("tidetiles"); tl.textContent="";
