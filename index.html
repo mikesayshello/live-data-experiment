@@ -125,6 +125,7 @@ section.card:nth-of-type(odd){background:#fffdf5}
 .tidewater{fill:rgba(30,107,255,.30)}
 .tidehandline{stroke:#0a7ea4;stroke-width:4;stroke-linecap:round}
 .tidetip{fill:#0a7ea4;stroke:var(--ink);stroke-width:1.5}
+.tidesand{margin-top:6px}
 .tidepill{fill:#fff;stroke:#0a7ea4;stroke-width:2}
 .tidelvltxt{fill:var(--ink);font:700 12px system-ui,sans-serif}
 .tidehub{fill:#0a7ea4;stroke:var(--ink);stroke-width:2}
@@ -286,6 +287,7 @@ h1{animation:none}
       <div class="label">Tide now <span aria-hidden="true">🌊</span></div>
       <div class="big wkday tidestate" id="tidestate">…</div>
       <div class="note" id="tideheight"></div>
+      <div class="note tidesand" id="tidesand"></div>
       <div class="tiles tidetiles" id="tidetiles"></div>
       <ul class="tidelist" id="tidelist"></ul>
       <p class="note" id="tidenote" aria-live="polite">Loading</p>
@@ -1557,6 +1559,21 @@ function drawTide(){
   drawTideChart(now);
   window.tideWord=falling?"falling":"rising";
   $("tideheight").textContent=tideDatum===0?"About "+h.toFixed(1)+" feet above the average low-tide line.":"About "+h.toFixed(1)+" feet, measured from "+TIDE_DATUMS[tideDatum][1]+".";
+  var sd=$("tidesand"); sd.textContent="";
+  if(tideDatum===0){
+    var pk=null; tideData.forEach(function(q){if(q.hi&&q.t>now&&(!pk||q.v>pk.v))pk=q});
+    function rng(ft){var lo=Math.round(ft*30/5)*5, hi=Math.round(ft*60/5)*5; return lo+" to "+hi+" ft"}
+    function line(txt){var p=document.createElement("div"); p.textContent=txt; sd.appendChild(p)}
+    if(pk){
+      var dh=pk.v-h;
+      line("Biggest high in the forecast: "+pk.v.toFixed(1)+" ft, "+tideLbl(pk.t,now)+(dh>0.2?". That is "+dh.toFixed(1)+" ft higher than now, so the water would cover roughly "+rng(dh)+" more beach (rough estimate).":". It is about as high as the water gets in this forecast."));
+    }
+    var nl2=null; for(var z=i+1;z<tideData.length;z++){if(!tideData[z].hi){nl2=tideData[z];break}}
+    if(nl2){
+      var dv=nl2.v;
+      line("Next low: "+dv.toFixed(1)+" ft, "+tideLbl(nl2.t,now)+(dv<0?". That is "+Math.abs(dv).toFixed(1)+" ft below an average low tide, so roughly "+rng(Math.abs(dv))+" of extra sand shows (rough estimate).":". That is "+dv.toFixed(1)+" ft above an average low tide, so roughly "+rng(dv)+" less sand shows than at an average low (rough estimate)."));
+    }
+  }
   var nh=null,nl=null;
   for(var m=i+1;m<tideData.length;m++){if(tideData[m].hi&&!nh)nh=tideData[m];if(!tideData[m].hi&&!nl)nl=tideData[m]}
   var tl=$("tidetiles"); tl.textContent="";
